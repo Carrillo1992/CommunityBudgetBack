@@ -1,0 +1,31 @@
+openapi: 3.0.3
+info:
+  title: CommunityBudget API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /users:
+    get:
+      operationId: getUsers
+      tags: [Users]
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDTO'
+components:
+  schemas:
+    UserDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identificador único del usuario
+        name:
+          type: string
+          description: Nombre del usuario
