@@ -4,20 +4,184 @@ info:
   version: 1.0.0
 servers:
   - url: http://localhost:8080
+
+tags:
+  - name: User
+    description: Operaciones relacionadas con usuarios
+  - name: Auth
+    description: Operaciones de autenticación
+
+security:
+  - BearerAuth: []
+
 paths:
-  /users:
-    get:
-      operationId: getUsers
-      tags: [Users]
+  /auth/login:
+    post:
+      operationId: login
+      tags:
+        - Auth
+      summary: Iniciar sesión
+      description: Autentica al usuario y devuelve un token JWT
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDTO'
       responses:
         '200':
-          description: Success
+          description: Login exitoso
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UserDTO'
+                $ref: '#/components/schemas/LoginResponseDTO'
+        '401':
+          description: Credenciales inválidas
+
+  /auth/refresh:
+    post:
+      operationId: refreshToken
+      tags:
+        - Auth
+      summary: Refrescar token
+      description: Obtiene un nuevo token JWT usando el refresh token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequestDTO'
+      responses:
+        '200':
+          description: Token refrescado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponseDTO'
+        '401':
+          description: Refresh token inválido o expirado
+
+  /user/me:
+    get:
+      operationId: getUser
+      tags:
+        - User
+      summary: Obtener información del usuario autenticado
+      description: Retorna la información del usuario actualmente autenticado
+      responses:
+        '200':
+          description: Usuario obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '401':
+          description: No autorizado
+        '404':
+          description: Usuario no encontrado
+
+  /user/register:
+    post:
+      operationId: createUser
+      tags:
+        - User
+      summary: Crear un nuevo usuario
+      description: Registra un nuevo usuario en el sistema
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateDTO'
+      responses:
+        '201':
+          description: Usuario creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '400':
+          description: Datos de entrada inválidos
+        '409':
+          description: El usuario ya existe
+
+  /user/{id}:
+    get:
+      operationId: getUserById
+      tags:
+        - User
+      summary: Obtener usuario por ID
+      description: Retorna la información de un usuario específico
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del usuario
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usuario obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '404':
+          description: Usuario no encontrado
+
+    put:
+      operationId: updateUser
+      tags:
+        - User
+      summary: Actualizar usuario
+      description: Actualiza la información de un usuario existente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del usuario
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateDTO'
+      responses:
+        '200':
+          description: Usuario actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '400':
+          description: Datos de entrada inválidos
+        '404':
+          description: Usuario no encontrado
+
+    delete:
+      operationId: deleteUser
+      tags:
+        - User
+      summary: Eliminar usuario
+      description: Elimina un usuario del sistema
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del usuario
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Usuario eliminado exitosamente
+        '404':
+          description: Usuario no encontrado
+
 components:
   schemas:
     UserDTO:
@@ -29,3 +193,101 @@ components:
         name:
           type: string
           description: Nombre del usuario
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario
+        avatarUrl:
+          type: string
+          description: URL del avatar del usuario
+
+    UserCreateDTO:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          description: Nombre del usuario
+          minLength: 2
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario
+        password:
+          type: string
+          format: password
+          description: Contraseña del usuario
+          minLength: 8
+        avatarUrl:
+          type: string
+          description: URL del avatar del usuario
+
+    UserUpdateDTO:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nombre del usuario
+          minLength: 2
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario
+        avatarUrl:
+          type: string
+          description: URL del avatar del usuario
+
+    LoginRequestDTO:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario
+        password:
+          type: string
+          format: password
+          description: Contraseña del usuario
+
+    LoginResponseDTO:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: Token JWT de acceso
+        refreshToken:
+          type: string
+          description: Token para refrescar el acceso
+        tokenType:
+          type: string
+          description: Tipo de token (Bearer)
+          default: Bearer
+        expiresIn:
+          type: integer
+          format: int64
+          description: Tiempo de expiración del token en segundos
+
+    RefreshTokenRequestDTO:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+          description: Token de refresco
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token JWT de autenticación
+
