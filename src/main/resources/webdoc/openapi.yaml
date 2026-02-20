@@ -12,7 +12,7 @@ tags:
     description: Operaciones de autenticación
 
 security:
-  - BearerAuth: []
+  - BearerAuth: [ ]
 
 paths:
   /auth/login:
@@ -22,7 +22,7 @@ paths:
         - Auth
       summary: Iniciar sesión
       description: Autentica al usuario y devuelve un token JWT
-      security: []
+      security: [ ]
       requestBody:
         required: true
         content:
@@ -46,7 +46,7 @@ paths:
         - Auth
       summary: Refrescar token
       description: Obtiene un nuevo token JWT usando el refresh token
-      security: []
+      security: [ ]
       requestBody:
         required: true
         content:
@@ -63,33 +63,14 @@ paths:
         '401':
           description: Refresh token inválido o expirado
 
-  /user/me:
-    get:
-      operationId: getUser
-      tags:
-        - User
-      summary: Obtener información del usuario autenticado
-      description: Retorna la información del usuario actualmente autenticado
-      responses:
-        '200':
-          description: Usuario obtenido exitosamente
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserDTO'
-        '401':
-          description: No autorizado
-        '404':
-          description: Usuario no encontrado
-
-  /user/register:
+  /auth/register:
     post:
-      operationId: createUser
+      operationId: register
       tags:
-        - User
-      summary: Crear un nuevo usuario
+        - Auth
+      summary: Registrar un nuevo usuario
       description: Registra un nuevo usuario en el sistema
-      security: []
+      security: [ ]
       requestBody:
         required: true
         content:
@@ -107,6 +88,61 @@ paths:
           description: Datos de entrada inválidos
         '409':
           description: El usuario ya existe
+
+  /user/me:
+    get:
+      operationId: getCurrentUser
+      tags:
+        - User
+      summary: Obtener información del usuario autenticado
+      description: Retorna la información del usuario actualmente autenticado
+      responses:
+        '200':
+          description: Usuario obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '401':
+          description: No autorizado
+        '404':
+          description: Usuario no encontrado
+
+    put:
+      operationId: updateCurrentUser
+      tags:
+        - User
+      summary: Actualizar usuario autenticado
+      description: Actualiza la información del usuario autenticado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateDTO'
+      responses:
+        '200':
+          description: Usuario actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '400':
+          description: Datos de entrada inválidos
+        '401':
+          description: No autorizado
+
+    delete:
+      operationId: deleteCurrentUser
+      tags:
+        - User
+      summary: Eliminar usuario autenticado
+      description: Elimina la cuenta del usuario autenticado
+      responses:
+        '204':
+          description: Usuario eliminado exitosamente
+        '401':
+          description: No autorizado
 
   /user/{id}:
     get:
@@ -133,11 +169,11 @@ paths:
           description: Usuario no encontrado
 
     put:
-      operationId: updateUser
+      operationId: updateUserById
       tags:
         - User
-      summary: Actualizar usuario
-      description: Actualiza la información de un usuario existente
+      summary: Actualizar usuario por ID
+      description: Actualiza la información de un usuario existente (solo admin)
       parameters:
         - name: id
           in: path
@@ -164,11 +200,11 @@ paths:
           description: Usuario no encontrado
 
     delete:
-      operationId: deleteUser
+      operationId: deleteUserById
       tags:
         - User
-      summary: Eliminar usuario
-      description: Elimina un usuario del sistema
+      summary: Eliminar usuario por ID
+      description: Elimina un usuario del sistema (solo admin)
       parameters:
         - name: id
           in: path
@@ -181,6 +217,27 @@ paths:
           description: Usuario eliminado exitosamente
         '404':
           description: Usuario no encontrado
+
+  /user/change-password:
+    put:
+      operationId: changePassword
+      tags:
+        - User
+      summary: Cambiar contraseña
+      description: Permite al usuario autenticado cambiar su contraseña
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordDTO'
+      responses:
+        '200':
+          description: Contraseña actualizada exitosamente
+        '400':
+          description: Datos de entrada inválidos o contraseña actual incorrecta
+        '401':
+          description: No autorizado
 
 components:
   schemas:
@@ -220,8 +277,10 @@ components:
         password:
           type: string
           format: password
-          description: Contraseña del usuario
+          description: Contraseña del usuario (mínimo 8 caracteres, debe incluir mayúscula, minúscula, número y carácter especial)
           minLength: 8
+          maxLength: 128
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
         avatarUrl:
           type: string
           description: URL del avatar del usuario
@@ -283,6 +342,24 @@ components:
         refreshToken:
           type: string
           description: Token de refresco
+
+    ChangePasswordDTO:
+      type: object
+      required:
+        - currentPassword
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+          format: password
+          description: Contraseña actual del usuario
+        newPassword:
+          type: string
+          format: password
+          description: Nueva contraseña del usuario (mínimo 8 caracteres, debe incluir mayúscula, minúscula, número y carácter especial)
+          minLength: 8
+          maxLength: 128
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
 
   securitySchemes:
     BearerAuth:
