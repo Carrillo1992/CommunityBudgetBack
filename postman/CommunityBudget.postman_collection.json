@@ -20,6 +20,11 @@
 			"key": "refreshToken",
 			"value": "",
 			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "1",
+			"type": "string"
 		}
 	],
 	"item": [
@@ -225,6 +230,134 @@
 							"path": ["user", "me"]
 						},
 						"description": "Elimina la cuenta del usuario autenticado"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"description": "Operaciones de administración (requiere rol ADMIN)",
+			"item": [
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user",
+							"host": ["{{baseUrl}}"],
+							"path": ["user"]
+						},
+						"description": "Obtiene la lista de todos los usuarios del sistema. Requiere rol ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["user", "{{userId}}"]
+						},
+						"description": "Obtiene la información de un usuario específico por su ID. Requiere rol ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "Update User By ID",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Admin Updated Name\",\n    \"email\": \"admin.updated@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["user", "{{userId}}"]
+						},
+						"description": "Actualiza la información de un usuario específico por su ID. Requiere rol ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User By ID",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["user", "{{userId}}"]
+						},
+						"description": "Elimina un usuario específico por su ID. Requiere rol ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "Promote User to Admin",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user/{{userId}}/promote-admin",
+							"host": ["{{baseUrl}}"],
+							"path": ["user", "{{userId}}", "promote-admin"]
+						},
+						"description": "Asigna el rol ADMIN a un usuario específico. Requiere rol ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "Revoke Admin Role",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user/{{userId}}/revoke-admin",
+							"host": ["{{baseUrl}}"],
+							"path": ["user", "{{userId}}", "revoke-admin"]
+						},
+						"description": "Revoca el rol ADMIN de un usuario específico. El usuario mantendrá el rol USER. Requiere rol ADMIN."
 					},
 					"response": []
 				}

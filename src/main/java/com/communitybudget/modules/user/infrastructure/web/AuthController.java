@@ -9,18 +9,23 @@ import com.communitybudget.config.security.JwtUtils;
 import com.communitybudget.modules.user.application.mapper.UserMapper;
 import com.communitybudget.modules.user.domain.model.User;
 import com.communitybudget.modules.user.domain.service.UserService;
+import com.communitybudget.modules.user.domain.valueobjects.RoleValue;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/auth")
@@ -29,6 +34,8 @@ public class AuthController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+
+    private final String BEARER_PREFIX = "Bearer";
 
     public AuthController(final UserService userService, final AuthenticationManager authenticationManager, final JwtUtils jwtUtils) {
         this.userService = userService;
@@ -77,11 +84,16 @@ public class AuthController {
         User user = userService.findByEmail(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+        List<SimpleGrantedAuthority> authorities = user.getRoles() != null
+                ? user.getRoles().stream()
+                    .map(role -> new SimpleGrantedAuthority(role.getName()))
+                    .collect(Collectors.toList())
+                : List.of(new SimpleGrantedAuthority(RoleValue.USER.getValue()));
 
         UserDetails userDetails = org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPassword())
-                .authorities("USER")
+                .authorities(authorities)
                 .build();
 
         String newAccessToken = jwtUtils.generateToken(userDetails, user.getId());
@@ -90,7 +102,7 @@ public class AuthController {
         LoginResponseDTO response = new LoginResponseDTO();
         response.setAccessToken(newAccessToken);
         response.setRefreshToken(newRefreshToken);
-        response.setTokenType("Bearer");
+        response.setTokenType(BEARER_PREFIX);
         response.setExpiresIn(jwtUtils.getAccessTokenExpirationSeconds());
 
         return ResponseEntity.ok(response);

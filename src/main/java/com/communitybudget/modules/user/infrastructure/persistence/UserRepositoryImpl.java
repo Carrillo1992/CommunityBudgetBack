@@ -5,50 +5,56 @@ import com.communitybudget.modules.user.domain.repository.UserRepository;
 import com.communitybudget.modules.user.infrastructure.mapper.UserMapper;
 import com.communitybudget.modules.user.infrastructure.persistence.common.JpaSpringUserRepository;
 import com.communitybudget.modules.user.infrastructure.persistence.entity.UserEntity;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
 
-    public final JpaSpringUserRepository repository;
+    private final JpaSpringUserRepository userRepository;
 
-    public UserRepositoryImpl(JpaSpringUserRepository repository) {
-        this.repository = repository;
+    public UserRepositoryImpl(JpaSpringUserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userRepository.findAll()
+                .stream().map(UserMapper.INSTANCE::toDomain)
+                .toList();
     }
 
     @Override
     public Optional<User> findById(final Long id) {
-        return repository.findById(id)
+        return userRepository.findById(id)
                 .map(UserMapper.INSTANCE::toDomain);
     }
 
     @Override
     public Optional<User> findByEmail(final String email) {
-        return repository.findByEmail(email)
+        return userRepository.findByEmail(email)
                 .map(UserMapper.INSTANCE::toDomain);
     }
 
     @Override
     public void save(final User user) {
         UserEntity entity = UserMapper.INSTANCE.toEntity(user);
-        repository.save(entity);
+        userRepository.save(entity);
     }
 
     @Override
     public void update(final User user) {
         UserEntity entity = UserMapper.INSTANCE.toEntity(user);
-        repository.findById(entity.getId())
-                .ifPresent(existingEntity -> repository.save(entity));
+        userRepository.findById(entity.getId())
+                .ifPresent(existingEntity -> userRepository.save(entity));
     }
 
-    @Transactional
     @Override
     public void delete(final User user) {
         UserEntity entity = UserMapper.INSTANCE.toEntity(user);
-        repository.findById(entity.getId())
-                .ifPresent(repository::delete);
+        userRepository.findById(entity.getId())
+                .ifPresent(userRepository::delete);
     }
 }

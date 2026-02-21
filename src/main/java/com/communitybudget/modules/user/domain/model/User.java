@@ -1,8 +1,10 @@
 package com.communitybudget.modules.user.domain.model;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 
 @Data
@@ -15,6 +17,7 @@ public class User {
     private final String password;
     private final String provider;
     private final String providerId;
+    private final Set<Role> roles;
     private final LocalDateTime createdAt;
 
 }

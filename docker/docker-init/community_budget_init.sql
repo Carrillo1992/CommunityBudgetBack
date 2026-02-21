@@ -69,7 +69,30 @@ CREATE TABLE `expense_shares` (
                                 FOREIGN KEY (`user_id`) REFERENCES users(`id`)
 );
 
+-- 6. TABLA DE ROLES
+-- Define los roles disponibles en el sistema
+CREATE TABLE `roles` (
+    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- 7. TABLA INTERMEDIA (USUARIOS <-> ROLES)
+-- Relación Many-to-Many: Un usuario puede tener N roles y un rol puede pertenecer a N usuarios.
+CREATE TABLE `user_roles` (
+    `user_id` BIGINT NOT NULL,
+    `role_id` BIGINT NOT NULL,
+    PRIMARY KEY (`user_id`, `role_id`),
+    FOREIGN KEY (`user_id`) REFERENCES users(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`role_id`) REFERENCES roles(`id`) ON DELETE CASCADE
+);
+
+-- Insertar roles por defecto
+INSERT INTO `roles` (`name`) VALUES ('ROLE_USER');
+INSERT INTO `roles` (`name`) VALUES ('ROLE_ADMIN');
+
 -- Índices para mejorar el rendimiento (Opcional pero recomendado)
 CREATE INDEX idx_group_members_user ON group_members(`user_id`);
 CREATE INDEX idx_expenses_group ON expenses(`group_id`);
 CREATE INDEX idx_expense_shares_expense ON expense_shares(`expense_id`);
+CREATE INDEX idx_user_roles_user ON user_roles(`user_id`);
+CREATE INDEX idx_user_roles_role ON user_roles(`role_id`);
