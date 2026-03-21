@@ -88,7 +88,44 @@ paths:
           description: Datos de entrada inválidos
         '409':
           description: El usuario ya existe
-
+  /auth/password-reset:
+    post:
+      operationId: password reset
+      tags:
+        - Auth
+      summary: Recuperar contraseña
+      description: Recupera la contraseña de un usuario utilizando un token de recuperación
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestDTO'
+      responses:
+        '200':
+          description: Contraseña recuperada exitosamente
+        '400':
+          description: Datos de entrada inválidos
+  /auth/token-validation:
+    post:
+      operationId: validateToken
+      tags:
+        - Auth
+      summary: Valida un token de autenticación
+      description: Valida un token de autenticación para verificar la validez del usuario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenValidationRequestDTO'
+      responses:
+        '200':
+          description: Token válido
+        '400':
+          description: Token inválido
+        '401':
+          description: No autorizado
   /user/me:
     get:
       operationId: getCurrentUser
@@ -342,6 +379,29 @@ components:
         refreshToken:
           type: string
           description: Token de refresco
+
+    PasswordResetRequestDTO:
+      type: object
+      required:
+        - token
+        - password
+      properties:
+        password:
+          type: string
+          format: email
+          description: Nueva contraseña
+        token:
+          type: string
+          description: Token de restablecimiento de contraseña
+
+    TokenValidationRequestDTO:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: Token de autenticación
 
     ChangePasswordDTO:
       type: object

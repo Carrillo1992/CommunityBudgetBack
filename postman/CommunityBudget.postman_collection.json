@@ -25,6 +25,21 @@
 			"key": "userId",
 			"value": "1",
 			"type": "string"
+		},
+		{
+			"key": "passwordResetEmail",
+			"value": "test@example.com",
+			"type": "string"
+		},
+		{
+			"key": "passwordResetToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "newPassword",
+			"value": "NewPassword456!",
+			"type": "string"
 		}
 	],
 	"item": [
@@ -132,6 +147,54 @@
 							"path": ["auth", "refresh"]
 						},
 						"description": "Obtiene un nuevo token JWT usando el refresh token. Los nuevos tokens se guardan automáticamente."
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/forgot-password?email={{passwordResetEmail}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "forgot-password"],
+							"query": [
+								{
+									"key": "email",
+									"value": "{{passwordResetEmail}}"
+								}
+							]
+						},
+						"description": "Solicita el envío de correo de recuperación para el email indicado."
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"{{passwordResetToken}}\",\n    \"password\": \"{{newPassword}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/reset-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "reset-password"]
+						},
+						"description": "Restablece la contraseña usando el token recibido por correo."
 					},
 					"response": []
 				}
