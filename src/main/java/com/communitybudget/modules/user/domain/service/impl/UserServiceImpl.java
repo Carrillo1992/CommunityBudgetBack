@@ -1,6 +1,7 @@
 package com.communitybudget.modules.user.domain.service.impl;
 
 import com.communitybudget.common.exceptions.exception.ConflictException;
+import com.communitybudget.common.exceptions.exception.ResourceNotFoundException;
 import com.communitybudget.modules.user.domain.exception.InvalidPasswordException;
 import com.communitybudget.modules.user.domain.model.Role;
 import com.communitybudget.modules.user.domain.model.User;
@@ -21,7 +22,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncryptor passwordEncryptor;
 
-    public UserServiceImpl(final UserRepository userRepository, final PasswordEncryptor passwordEncryptor,  final RoleRepository roleRepository) {
+    public UserServiceImpl(final UserRepository userRepository, final PasswordEncryptor passwordEncryptor, final RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncryptor = passwordEncryptor;
         this.roleRepository = roleRepository;
@@ -50,9 +51,9 @@ public class UserServiceImpl implements UserService {
         }
 
         final Set<Role> roles = user.getRoles() == null || user.getRoles().isEmpty() ?
-            Set.of(roleRepository.findByName(RoleValue.USER.getValue())
-                    .orElseThrow(() -> new IllegalArgumentException("Role USER not found"))) :
-            (user.getRoles());
+                Set.of(roleRepository.findByName(RoleValue.USER.getValue())
+                        .orElseThrow(() -> new IllegalArgumentException("Role USER not found"))) :
+                (user.getRoles());
 
         User userWithEncodedPassword = User.builder()
                 .id(user.getId())
@@ -95,10 +96,28 @@ public class UserServiceImpl implements UserService {
                 .password(passwordEncryptor.encode(newPassword))
                 .provider(user.getProvider())
                 .providerId(user.getProviderId())
+                .roles(user.getRoles())
                 .createdAt(user.getCreatedAt())
                 .build();
 
         userRepository.update(updatedUser);
+    }
+
+    @Override
+    public void changePassword(final String newPassword, final String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        User.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .password(passwordEncryptor.encode(newPassword))
+                .provider(user.getProvider())
+                .providerId(user.getProviderId())
+                .roles(user.getRoles())
+                .createdAt(user.getCreatedAt())
+                .build();
+
     }
 
     @Override

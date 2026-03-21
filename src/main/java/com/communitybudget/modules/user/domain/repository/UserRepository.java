@@ -13,6 +13,8 @@ public interface UserRepository {
 
     Optional<User> findByEmail(final String email);
 
+    Boolean existsByEmail(final String email);
+
     void save(final User user);
 
     void update(final User user);

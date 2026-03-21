@@ -1,12 +1,10 @@
 package com.communitybudget.modules.user.infrastructure.web;
 
-import com.communitybudget.application.dto.LoginRequestDTO;
-import com.communitybudget.application.dto.LoginResponseDTO;
-import com.communitybudget.application.dto.RefreshTokenRequestDTO;
-import com.communitybudget.application.dto.UserCreateDTO;
+import com.communitybudget.application.dto.*;
 import com.communitybudget.common.exceptions.exception.ResourceNotFoundException;
 import com.communitybudget.config.security.JwtUtils;
 import com.communitybudget.modules.user.application.mapper.UserMapper;
+import com.communitybudget.modules.user.application.service.PasswordResetApplicationService;
 import com.communitybudget.modules.user.domain.model.User;
 import com.communitybudget.modules.user.domain.service.UserService;
 import com.communitybudget.modules.user.domain.valueobjects.RoleValue;
@@ -19,10 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,13 +27,15 @@ import java.util.stream.Collectors;
 public class AuthController {
 
     private final UserService userService;
+    private final PasswordResetApplicationService passwordResetService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
     private final String BEARER_PREFIX = "Bearer";
 
-    public AuthController(final UserService userService, final AuthenticationManager authenticationManager, final JwtUtils jwtUtils) {
+    public AuthController(final UserService userService,final  PasswordResetApplicationService passwordResetService, final AuthenticationManager authenticationManager, final JwtUtils jwtUtils) {
         this.userService = userService;
+        this.passwordResetService = passwordResetService;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
     }
@@ -106,6 +103,18 @@ public class AuthController {
         response.setExpiresIn(jwtUtils.getAccessTokenExpirationSeconds());
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam("email") final String email) {
+       passwordResetService.processPasswordReset(email);
+       return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequestDTO request){
+        passwordResetService.processTokenValidation(request.getToken(), request.getPassword());
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
 }

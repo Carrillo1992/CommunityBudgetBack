@@ -39,6 +39,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
     public void save(final User user) {
         UserEntity entity = UserMapper.INSTANCE.toEntity(user);
         userRepository.save(entity);

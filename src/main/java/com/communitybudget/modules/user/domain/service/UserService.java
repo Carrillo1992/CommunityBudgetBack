@@ -21,6 +21,8 @@ public interface UserService {
 
     void changePassword(final User user, final String currentPassword, final String newPassword);
 
+    void changePassword(final String newPassword, final String email);
+
     void addAdminRole(final User user);
 
     void removeAdminRole(final User user);
