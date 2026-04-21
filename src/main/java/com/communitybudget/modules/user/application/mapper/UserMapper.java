@@ -3,9 +3,13 @@ package com.communitybudget.modules.user.application.mapper;
 import com.communitybudget.application.dto.UserCreateDTO;
 import com.communitybudget.application.dto.UserDTO;
 import com.communitybudget.modules.user.domain.model.User;
+import com.communitybudget.modules.user.domain.model.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
+
+import java.util.Set;
 
 @Mapper
 public interface UserMapper {
@@ -14,6 +18,7 @@ public interface UserMapper {
 
     @Mapping(target = "id", expression = "java(user.getId() != null ? user.getId().toString() : null)")
     @Mapping(target = "avatarUrl", ignore = true)
+    @Mapping(target = "role", source = "roles", qualifiedByName = "extractRoleName")
     UserDTO toDto(final User user);
 
     @Mapping(target = "id", expression = "java(userDTO.getId() != null ? Long.parseLong(userDTO.getId()) : null)")
@@ -33,5 +38,13 @@ public interface UserMapper {
 
     @Mapping(target = "avatarUrl", ignore = true)
     UserCreateDTO toCreateDto(final User user);
+
+    @Named("extractRoleName")
+    default String extractRoleName(Set<Role> roles) {
+        return roles.stream()
+                .findFirst()
+                .map(Role::getName)
+                .orElse("ROLE_USER");
+    }
 
 }
