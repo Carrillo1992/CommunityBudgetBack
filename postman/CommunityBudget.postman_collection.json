@@ -423,6 +423,33 @@
 						"description": "Revoca el rol ADMIN de un usuario específico. El usuario mantendrá el rol USER. Requiere rol ADMIN."
 					},
 					"response": []
+				},
+				{
+					"name": "Change User Password (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"newPassword\": \"NewPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/{{userId}}/change-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["user", "{{userId}}", "change-password"]
+						},
+						"description": "Permite al administrador cambiar la contraseña de cualquier usuario. Requiere rol ADMIN."
+					},
+					"response": []
 				}
 			]
 		}

@@ -167,4 +167,25 @@ public class UserServiceImpl implements UserService {
 
         userRepository.update(updatedUser);
     }
+
+    @Override
+    public void changePasswordByUserId(final Long userId, final String newPassword) {
+        // Buscar el usuario por ID
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        // Crear usuario actualizado con la nueva contraseña encriptada
+        User updatedUser = User.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .password(passwordEncryptor.encode(newPassword))
+                .provider(user.getProvider())
+                .providerId(user.getProviderId())
+                .roles(user.getRoles())
+                .createdAt(user.getCreatedAt())
+                .build();
+
+        userRepository.update(updatedUser);
+    }
 }
