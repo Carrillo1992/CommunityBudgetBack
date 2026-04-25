@@ -15,6 +15,7 @@ public class User {
     private final String name;
     private final String email;
     private final String password;
+    private final String avatarUrl;
     private final String provider;
     private final String providerId;
     private final Set<Role> roles;
