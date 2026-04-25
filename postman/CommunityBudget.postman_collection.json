@@ -40,6 +40,11 @@
 			"key": "newPassword",
 			"value": "NewPassword456!",
 			"type": "string"
+		},
+		{
+			"key": "googleIdToken",
+			"value": "",
+			"type": "string"
 		}
 	],
 	"item": [
@@ -195,6 +200,46 @@
 							"path": ["auth", "reset-password"]
 						},
 						"description": "Restablece la contraseña usando el token recibido por correo."
+					},
+					"response": []
+				},
+				{
+					"name": "Google Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);",
+									"}",
+									"if (jsonData.refreshToken) {",
+									"    pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"idToken\": \"{{googleIdToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/oauth/google",
+							"host": ["{{baseUrl}}"],
+							"path": ["oauth", "google"]
+						},
+						"description": "Autentica al usuario usando un token de ID de Google (idToken). Los tokens generados se guardan automáticamente en las variables de la colección."
 					},
 					"response": []
 				}

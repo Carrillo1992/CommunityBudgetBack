@@ -13,9 +13,11 @@ public interface UserService {
 
     Optional<User> findByEmail(final String email);
 
-    void save(final User user);
+    User save(final User user);
 
     void update(final User user);
+
+    User updateUser(User user);
 
     void delete(final User user);
 

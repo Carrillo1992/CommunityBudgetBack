@@ -44,8 +44,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void save(final User user) {
-        // Validar que el email no exista antes de intentar guardar
+    public User save(final User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new ConflictException("Email already exists: " + user.getEmail());
         }
@@ -59,13 +58,19 @@ public class UserServiceImpl implements UserService {
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
-                .password(passwordEncryptor.encode(user.getPassword()))
+                .password(user.getPassword() != null ? passwordEncryptor.encode(user.getPassword()) : null)
+                .avatarUrl(user.getAvatarUrl())
                 .provider(user.getProvider())
                 .providerId(user.getProviderId())
                 .createdAt(user.getCreatedAt())
                 .roles(roles)
                 .build();
-        userRepository.save(userWithEncodedPassword);
+        return userRepository.save(userWithEncodedPassword);
+    }
+
+    @Override
+    public User updateUser(User user){
+        return userRepository.save(user);
     }
 
     @Override

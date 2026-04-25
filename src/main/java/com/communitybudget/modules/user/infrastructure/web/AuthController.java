@@ -41,9 +41,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@Valid @RequestBody final UserCreateDTO userCreateDTO) {
-        userService.save(UserMapper.INSTANCE.fromCreateDto(userCreateDTO));
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody final UserCreateDTO userCreateDTO) {
+        User savedUser = userService.save(UserMapper.INSTANCE.fromCreateDto(userCreateDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.INSTANCE.toDto(savedUser));
     }
 
     @PostMapping("/login")

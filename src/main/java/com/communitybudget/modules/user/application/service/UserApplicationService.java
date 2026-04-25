@@ -36,7 +36,7 @@ public class UserApplicationService implements UserDetailsService {
     }
 
     @Transactional
-    public void registerUser(final UserCreateDTO userDTO) {
+    public UserDTO registerUser(final UserCreateDTO userDTO) {
         User user = User.builder()
                 .id(null)
                 .name(userDTO.getName())
@@ -47,19 +47,25 @@ public class UserApplicationService implements UserDetailsService {
                 .createdAt(null)
                 .build();
 
-        userService.save(user);
+        User savedUser = userService.save(user);
+        return UserMapper.INSTANCE.toDto(savedUser);
     }
 
     @Transactional
     public void updateUser(final String email, final UserUpdateDTO userDTO) {
+        if (userService.findByEmail(email).isPresent()){
+            throw new ResourceNotFoundException("User with email " + email + " already exists");
+        }
         User existingUser = userService.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
 
         User updatedUser = User.builder()
                 .id(existingUser.getId())
                 .name(userDTO.getName())
                 .email(userDTO.getEmail())
                 .password(existingUser.getPassword())
+                .avatarUrl(userDTO.getAvatarUrl())
                 .provider(existingUser.getProvider())
                 .providerId(existingUser.getProviderId())
                 .createdAt(existingUser.getCreatedAt())
@@ -83,6 +89,7 @@ public class UserApplicationService implements UserDetailsService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
+    @Transactional
     public void deleteUser(final String email) {
         User existingUser = userService.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -96,7 +103,7 @@ public class UserApplicationService implements UserDetailsService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
         if (existingUser.getEmail().equals(currentUserEmail)) {
-            throw new BadRequestException("Cannot delete your own account using this endpoint. Use DELETE /user/me instead.");
+            throw new BadRequestException("Cannot delete your own account.");
         }
 
         userService.delete(existingUser);

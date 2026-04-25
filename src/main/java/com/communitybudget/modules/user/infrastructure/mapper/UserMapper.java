@@ -19,6 +19,7 @@ public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     @Mapping(target = "roles", source = "roles", qualifiedByName = "rolesToEntities")
+
     UserEntity toEntity(User user);
 
     @Mapping(target = "roles", source = "roles", qualifiedByName = "entitiesToRoles")

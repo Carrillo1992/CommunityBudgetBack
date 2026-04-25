@@ -282,7 +282,7 @@ components:
       type: object
       properties:
         id:
-          type: string
+          type: number
           description: Identificador único del usuario
         name:
           type: string
