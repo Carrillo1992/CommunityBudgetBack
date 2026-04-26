@@ -27,6 +27,7 @@ public class PasswordResetApplicationService {
         }
     }
 
+    @Transactional
     public void processTokenValidation(final String token, final String newPassword) {
         passwordResetService.tokenValidation(token, newPassword);
     }

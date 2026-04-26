@@ -188,22 +188,37 @@
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
                 <version>7.2.0</version>
+                <configuration>
+                    <!-- General Configuration-->
+                    <generatorName>spring</generatorName>
+                    <generateModels>true</generateModels>
+                    <generateApis>false</generateApis>
+                    <generateSupportingFiles>false</generateSupportingFiles>
+                    <configOptions>
+                        <useSpringBoot3>true</useSpringBoot3>
+                    </configOptions>
+                </configuration>
                 <executions>
+                    <!-- Generate Users API using OpenAPI Generator -->
                     <execution>
+                        <id>generate-users-api</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/webdoc/openapi.yaml</inputSpec>
-                            <generatorName>spring</generatorName>
-                            <apiPackage>com.communitybudget.infrastructure.controllers</apiPackage>
-                            <modelPackage>com.communitybudget.application.dto</modelPackage>
-                            <configOptions>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <interfaceOnly>true</interfaceOnly>
-                                <skipDefaultInterface>true</skipDefaultInterface>
-                                <useTags>true</useTags>
-                            </configOptions>
+                            <inputSpec>${project.basedir}/src/main/resources/webdoc/users-api.yaml</inputSpec>
+                            <modelPackage>com.communitybudget.modules.user.application.dto</modelPackage>
+                        </configuration>
+                    </execution>
+                    <!-- Generate Groups API using OpenAPI Generator -->
+                    <execution>
+                        <id>generate-groups-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/webdoc/groups-api.yaml</inputSpec>
+                            <modelPackage>com.communitybudget.modules.group.application.dto</modelPackage>
                         </configuration>
                     </execution>
                 </executions>

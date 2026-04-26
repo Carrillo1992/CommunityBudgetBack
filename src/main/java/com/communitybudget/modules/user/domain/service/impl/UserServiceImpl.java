@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
     public void changePassword(final String newPassword, final String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
-        User.builder()
+        userRepository.update(User.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
@@ -121,8 +121,7 @@ public class UserServiceImpl implements UserService {
                 .providerId(user.getProviderId())
                 .roles(user.getRoles())
                 .createdAt(user.getCreatedAt())
-                .build();
-
+                .build());
     }
 
     @Override

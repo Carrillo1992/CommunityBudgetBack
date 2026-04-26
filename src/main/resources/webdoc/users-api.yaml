@@ -283,6 +283,7 @@ components:
       properties:
         id:
           type: number
+          format: int64
           description: Identificador único del usuario
         name:
           type: string
@@ -388,8 +389,11 @@ components:
       properties:
         password:
           type: string
-          format: email
+          format: password
           description: Nueva contraseña
+          minLength: 8
+          maxLength: 128
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
         token:
           type: string
           description: Token de restablecimiento de contraseña

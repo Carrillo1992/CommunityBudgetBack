@@ -1,5 +1,6 @@
 package com.communitybudget.modules.user.domain.service.impl;
 
+import com.communitybudget.modules.user.domain.exception.InvalidTokenException;
 import com.communitybudget.modules.user.domain.repository.PasswordResetRepository;
 import com.communitybudget.modules.user.domain.repository.UserRepository;
 import com.communitybudget.modules.user.domain.service.PasswordResetService;
@@ -24,10 +25,11 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     @Override
     public void tokenValidation(final String token, final String newPassword) {
         PasswordRecovery resetPassword = passwordResetRepository.findByToken(token);
-        if (isValidToken(resetPassword.getToken())) {
-            userService.changePassword(newPassword, resetPassword.getEmail());
-            passwordResetRepository.deleteByEmail(resetPassword.getEmail());
+        if (resetPassword == null || !isValidToken(resetPassword)) {
+            throw new InvalidTokenException("Invalid token provided");
         }
+        userService.changePassword(newPassword, resetPassword.getEmail());
+        passwordResetRepository.deleteByEmail(resetPassword.getEmail());
     }
 
     @Override
@@ -46,8 +48,8 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         return null;
     }
 
-    private boolean isValidToken(final String token) {
-        return passwordResetRepository.findByToken(token).getExpTime().isAfter(LocalDateTime.now());
+    private boolean isValidToken(final PasswordRecovery resetPassword) {
+        return resetPassword.getExpTime().isAfter(LocalDateTime.now());
     }
 
     private String createNewToken() {

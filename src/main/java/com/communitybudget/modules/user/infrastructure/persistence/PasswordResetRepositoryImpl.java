@@ -17,7 +17,7 @@ public class PasswordResetRepositoryImpl implements PasswordResetRepository {
 
     @Override
     public PasswordRecovery findByToken(final String token) {
-        return jpaSpringPasswordResetRepository.findByEmail(token)
+        return jpaSpringPasswordResetRepository.findByToken(token)
                 .map(PasswordResetMapper.INSTANCE::toDomain)
                 .orElse(null);
     }

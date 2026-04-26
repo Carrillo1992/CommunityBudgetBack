@@ -1,8 +1,9 @@
 package com.communitybudget.modules.user.infrastructure.web;
 
-import com.communitybudget.application.dto.ChangePasswordDTO;
-import com.communitybudget.application.dto.UserDTO;
-import com.communitybudget.application.dto.UserUpdateDTO;
+
+import com.communitybudget.modules.user.application.dto.ChangePasswordDTO;
+import com.communitybudget.modules.user.application.dto.UserDTO;
+import com.communitybudget.modules.user.application.dto.UserUpdateDTO;
 import com.communitybudget.modules.user.application.service.UserApplicationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

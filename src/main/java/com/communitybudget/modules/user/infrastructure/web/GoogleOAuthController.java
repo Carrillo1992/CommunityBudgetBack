@@ -1,7 +1,7 @@
 package com.communitybudget.modules.user.infrastructure.web;
 
-import com.communitybudget.application.dto.LoginResponseDTO;
 import com.communitybudget.config.security.JwtUtils;
+import com.communitybudget.modules.user.application.dto.LoginResponseDTO;
 import com.communitybudget.modules.user.domain.model.User;
 import com.communitybudget.modules.user.domain.service.UserService;
 import com.communitybudget.modules.user.domain.valueobjects.RoleValue;

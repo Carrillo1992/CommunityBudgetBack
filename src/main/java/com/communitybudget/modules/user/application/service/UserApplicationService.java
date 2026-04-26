@@ -1,10 +1,12 @@
 package com.communitybudget.modules.user.application.service;
 
-import com.communitybudget.application.dto.UserCreateDTO;
-import com.communitybudget.application.dto.UserDTO;
-import com.communitybudget.application.dto.UserUpdateDTO;
+
 import com.communitybudget.common.exceptions.exception.BadRequestException;
+import com.communitybudget.common.exceptions.exception.ConflictException;
 import com.communitybudget.common.exceptions.exception.ResourceNotFoundException;
+import com.communitybudget.modules.user.application.dto.UserCreateDTO;
+import com.communitybudget.modules.user.application.dto.UserDTO;
+import com.communitybudget.modules.user.application.dto.UserUpdateDTO;
 import com.communitybudget.modules.user.application.mapper.UserMapper;
 import com.communitybudget.modules.user.domain.model.User;
 import com.communitybudget.modules.user.domain.service.UserService;
@@ -53,8 +55,9 @@ public class UserApplicationService implements UserDetailsService {
 
     @Transactional
     public void updateUser(final String email, final UserUpdateDTO userDTO) {
-        if (userService.findByEmail(email).isPresent()){
-            throw new ResourceNotFoundException("User with email " + email + " already exists");
+        if (userDTO.getEmail() != null && !userDTO.getEmail().equals(email)
+                && userService.findByEmail(userDTO.getEmail()).isPresent()) {
+            throw new ConflictException("User with email " + userDTO.getEmail() + " already exists");
         }
         User existingUser = userService.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -62,10 +65,10 @@ public class UserApplicationService implements UserDetailsService {
 
         User updatedUser = User.builder()
                 .id(existingUser.getId())
-                .name(userDTO.getName())
-                .email(userDTO.getEmail())
+                .name(userDTO.getName() != null ? userDTO.getName() : existingUser.getName())
+                .email(userDTO.getEmail() != null ? userDTO.getEmail() : existingUser.getEmail())
                 .password(existingUser.getPassword())
-                .avatarUrl(userDTO.getAvatarUrl())
+                .avatarUrl(userDTO.getAvatarUrl() != null ? userDTO.getAvatarUrl() : existingUser.getAvatarUrl())
                 .provider(existingUser.getProvider())
                 .providerId(existingUser.getProviderId())
                 .createdAt(existingUser.getCreatedAt())
@@ -143,9 +146,10 @@ public class UserApplicationService implements UserDetailsService {
 
         User updatedUser = User.builder()
                 .id(existingUser.getId())
-                .name(userDTO.getName())
-                .email(userDTO.getEmail())
+                .name(userDTO.getName() != null ? userDTO.getName() : existingUser.getName())
+                .email(userDTO.getEmail() != null ? userDTO.getEmail() : existingUser.getEmail())
                 .password(existingUser.getPassword())
+                .avatarUrl(userDTO.getAvatarUrl() != null ? userDTO.getAvatarUrl() : existingUser.getAvatarUrl())
                 .provider(existingUser.getProvider())
                 .providerId(existingUser.getProviderId())
                 .roles(existingUser.getRoles())
