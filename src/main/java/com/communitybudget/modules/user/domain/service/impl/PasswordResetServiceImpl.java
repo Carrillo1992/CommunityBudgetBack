@@ -1,5 +1,7 @@
 package com.communitybudget.modules.user.domain.service.impl;
 
+import com.communitybudget.common.exceptions.exception.BadRequestException;
+import com.communitybudget.common.exceptions.exception.ResourceNotFoundException;
 import com.communitybudget.modules.user.domain.repository.PasswordResetRepository;
 import com.communitybudget.modules.user.domain.repository.UserRepository;
 import com.communitybudget.modules.user.domain.service.PasswordResetService;
@@ -8,6 +10,7 @@ import com.communitybudget.modules.user.domain.valueobjects.PasswordRecovery;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import org.springframework.transaction.annotation.Transactional;
 
 public class PasswordResetServiceImpl implements PasswordResetService {
 
@@ -22,32 +25,39 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     @Override
+    @Transactional
     public void tokenValidation(final String token, final String newPassword) {
         PasswordRecovery resetPassword = passwordResetRepository.findByToken(token);
-        if (isValidToken(resetPassword.getToken())) {
-            userService.changePassword(newPassword, resetPassword.getEmail());
-            passwordResetRepository.deleteByEmail(resetPassword.getEmail());
+
+        if (resetPassword == null) {
+            throw new ResourceNotFoundException("Token inválido o expirado");
         }
+
+        if (resetPassword.getExpTime().isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("El token ha expirado");
+        }
+
+        userService.changePassword(newPassword, resetPassword.getEmail());
+        passwordResetRepository.deleteByEmail(resetPassword.getEmail());
     }
 
     @Override
+    @Transactional
     public String createToken(final String email) {
         if (userRepository.existsByEmail(email)) {
             String token = createNewToken();
             LocalDateTime expTime = LocalDateTime.now().plusMinutes(15);
+
             PasswordRecovery recovery = PasswordRecovery.builder()
                     .token(token)
                     .email(email)
                     .expTime(expTime)
                     .build();
+
             passwordResetRepository.save(recovery);
             return token;
         }
         return null;
-    }
-
-    private boolean isValidToken(final String token) {
-        return passwordResetRepository.findByToken(token).getExpTime().isAfter(LocalDateTime.now());
     }
 
     private String createNewToken() {

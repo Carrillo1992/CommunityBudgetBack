@@ -13,4 +13,6 @@ public interface JpaSpringPasswordResetRepository extends JpaRepository<Password
 
     Optional<PasswordResetEntity> findByEmail(final String email);
 
+    Optional<PasswordResetEntity> findByToken(String token);
+
 }

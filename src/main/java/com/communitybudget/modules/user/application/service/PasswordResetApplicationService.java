@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PasswordResetApplicationService {
 
-    private static final String URL_RESET_PASSWORD = "/api/v1/email/reset-password";
+    private static final String URL_RESET_PASSWORD = "http://localhost:5173/reset-password";
 
     private final PasswordResetService passwordResetService;
     private final EmailService emailService;
