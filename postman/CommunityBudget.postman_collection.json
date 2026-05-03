@@ -45,6 +45,21 @@
 			"key": "googleIdToken",
 			"value": "",
 			"type": "string"
+		},
+		{
+			"key": "groupId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "inviteCode",
+			"value": "INVITE12345",
+			"type": "string"
+		},
+		{
+			"key": "guestId",
+			"value": "1",
+			"type": "string"
 		}
 	],
 	"item": [
@@ -344,6 +359,264 @@
 			]
 		},
 		{
+			"name": "Group",
+			"description": "Operaciones relacionadas con grupos",
+			"item": [
+				{
+					"name": "Create Group",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Grupo de Prueba\",\n    \"currency\": \"EUR\",\n    \"description\": \"Este es un grupo de prueba para la API\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/group",
+							"host": ["{{baseUrl}}"],
+							"path": ["group"]
+						},
+						"description": "Crea un nuevo grupo"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Groups",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/group/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["group", "me"]
+						},
+						"description": "Obtiene los grupos a los que pertenece el usuario autenticado"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Group By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/group/me/{{groupId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["group", "me", "{{groupId}}"]
+						},
+						"description": "Obtiene un grupo específico al que pertenece el usuario autenticado"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Group",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Grupo de Prueba Actualizado\",\n    \"currency\": \"USD\",\n    \"description\": \"Este es un grupo de prueba actualizado para la API\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/group/me/{{groupId}}/update",
+							"host": ["{{baseUrl}}"],
+							"path": ["group", "me", "{{groupId}}", "update"]
+						},
+						"description": "Permite al usuario autenticado actualizar la información de un grupo específico"
+					},
+					"response": []
+				},
+				{
+					"name": "Regenerate Invite Code",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/group/me/{{groupId}}/update/invite-code",
+							"host": ["{{baseUrl}}"],
+							"path": ["group", "me", "{{groupId}}", "update", "invite-code"]
+						},
+						"description": "Permite al usuario autenticado regenerar el código de invitación de un grupo específico"
+					},
+					"response": []
+				},
+				{
+					"name": "Promote Group Member",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/group/me/{{groupId}}/promote/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["group", "me", "{{groupId}}", "promote", "{{userId}}"]
+						},
+						"description": "Permite al usuario autenticado promover a un miembro a administrador en un grupo específico"
+					},
+					"response": []
+				},
+				{
+					"name": "Join Group",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/group/join/{{inviteCode}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["group", "join", "{{inviteCode}}"]
+						},
+						"description": "Permite a un usuario unirse a un grupo utilizando un código de invitación"
+					},
+					"response": []
+				},
+				{
+					"name": "Join Group As Guest",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/group/join/{{inviteCode}}/{{guestId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["group", "join", "{{inviteCode}}", "{{guestId}}"]
+						},
+						"description": "Permite al usuario unirse al Grupo reemplazando a un miembro invitado"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Guest Member",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Invitado\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/group/{{groupId}}/guest",
+							"host": ["{{baseUrl}}"],
+							"path": ["group", "{{groupId}}", "guest"]
+						},
+						"description": "Permite a un usuario agregar un miembro invitado a un grupo específico"
+					},
+					"response": []
+				},
+				{
+					"name": "Leave Group",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/group/{{groupId}}/leave",
+							"host": ["{{baseUrl}}"],
+							"path": ["group", "{{groupId}}", "leave"]
+						},
+						"description": "Permite a un usuario salir de un grupo específico"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Group Member",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/group/{{groupId}}/kick/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["group", "{{groupId}}", "kick", "{{userId}}"]
+						},
+						"description": "Elimina a un miembro de un grupo específico"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Group",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/group/{{groupId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["group", "{{groupId}}"]
+						},
+						"description": "Elimina un grupo por su ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Admin",
 			"description": "Operaciones de administración (requiere rol ADMIN)",
 			"item": [
@@ -468,9 +741,46 @@
 						"description": "Revoca el rol ADMIN de un usuario específico. El usuario mantendrá el rol USER. Requiere rol ADMIN."
 					},
 					"response": []
+				},
+				{
+					"name": "Get All Groups",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/group",
+							"host": ["{{baseUrl}}"],
+							"path": ["group"]
+						},
+						"description": "Obtiene una lista de todos los grupos. Requiere rol ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Group By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/group/{{groupId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["group", "{{groupId}}"]
+						},
+						"description": "Obtiene un grupo por su ID. Requiere rol ADMIN."
+					},
+					"response": []
 				}
 			]
 		}
 	]
 }
-

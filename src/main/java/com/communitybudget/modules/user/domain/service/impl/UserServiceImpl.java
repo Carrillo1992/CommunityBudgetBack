@@ -151,7 +151,6 @@ public class UserServiceImpl implements UserService {
         Set<Role> updatedRoles = new HashSet<>(user.getRoles() != null ? user.getRoles() : Set.of());
         updatedRoles.removeIf(role -> RoleValue.ADMIN.getValue().equals(role.getName()));
 
-        // Asegurar que al menos tenga el rol USER
         if (updatedRoles.isEmpty()) {
             Role userRole = roleRepository.findByName(RoleValue.USER.getValue())
                     .orElseThrow(() -> new IllegalArgumentException("Role USER not found"));

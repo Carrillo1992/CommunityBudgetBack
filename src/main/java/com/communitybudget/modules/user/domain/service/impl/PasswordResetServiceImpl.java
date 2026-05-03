@@ -1,5 +1,6 @@
 package com.communitybudget.modules.user.domain.service.impl;
 
+import com.communitybudget.common.utils.StringUtils;
 import com.communitybudget.modules.user.domain.exception.InvalidTokenException;
 import com.communitybudget.modules.user.domain.repository.PasswordResetRepository;
 import com.communitybudget.modules.user.domain.repository.UserRepository;
@@ -53,16 +54,6 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     private String createNewToken() {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder token = new StringBuilder();
-
-        SecureRandom random = new SecureRandom();
-
-        for (int i = 0; i < 6; i++) {
-            int index = random.nextInt(characters.length());
-            token.append(characters.charAt(index));
-        }
-
-        return token.toString();
+        return StringUtils.generateRandomString(6);
     }
 }
