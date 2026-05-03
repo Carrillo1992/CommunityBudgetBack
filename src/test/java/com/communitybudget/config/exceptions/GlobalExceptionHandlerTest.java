@@ -98,6 +98,6 @@ class GlobalExceptionHandlerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.status").value(500))
-                .andExpect(jsonPath("$.message").value("Error interno del servidor"));
+                .andExpect(jsonPath("$.message").value("Internal Server Error: Generic Message"));
     }
 }

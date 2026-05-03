@@ -1,0 +1,571 @@
+openapi: 3.0.3
+info:
+  title: CommunityBudget API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name: Group
+    description: Operaciones relacionadas con grupos
+
+security:
+  - BearerAuth: [ ]
+
+paths:
+  /group:
+    get:
+      tags:
+        - getGroups
+      summary: Obtiene una lista de grupos
+      operationId: getGroups
+      responses:
+        '200':
+          description: Lista de grupos obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GroupDto'
+        '401':
+          description: No autorizado
+          content: { }
+        '403':
+          description: Acceso denegado
+          content: { }
+        '500':
+          description: Error interno del servidor
+          content: { }
+    post:
+      tags:
+        - createGroup
+      summary: Crea un nuevo grupo
+      operationId: createGroup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupDto'
+      responses:
+        '201':
+          description: Grupo creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupDto'
+        '400':
+          description: Solicitud incorrecta
+          content: { }
+        '401':
+          description: No autorizado
+          content: { }
+        '403':
+          description: Acceso denegado
+          content: { }
+        '500':
+          description: Error interno del servidor
+          content: { }
+  /group/me:
+    get:
+      tags:
+        - getMyGroups
+      summary: Obtiene los grupos a los que pertenece el usuario autenticado
+      operationId: getMyGroups
+      responses:
+        '200':
+          description: Grupos obtenidos exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GroupDto'
+        '401':
+          description: No autorizado
+          content: { }
+        '403':
+          description: Acceso denegado
+          content: { }
+        '500':
+          description: Error interno del servidor
+          content: { }
+
+  /group/me/{groupId}:
+    get:
+      tags:
+        - getMyGroupById
+      summary: Obtiene un grupo específico al que pertenece el usuario autenticado
+      operationId: getMyGroupById
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Grupo obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupDto'
+        '400':
+          description: Solicitud incorrecta
+          content: { }
+        '401':
+          description: No autorizado
+          content: { }
+        '403':
+          description: Acceso denegado
+          content: { }
+        '404':
+          description: Grupo no encontrado
+          content: { }
+        '500':
+          description: Error interno del servidor
+          content: { }
+  /group/me/{groupId}/update:
+    put:
+      tags:
+        - updateGroup
+      summary: Permite al usuario autenticado actualizar la información de un grupo específico
+      operationId: updateGroup
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGroupDto'
+      responses:
+        '200':
+          description: Grupo actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupDto'
+        '400':
+          description: Solicitud incorrecta
+          content: { }
+        '401':
+          description: No autorizado
+          content: { }
+        '403':
+          description: Acceso denegado
+          content: { }
+        '404':
+          description: Grupo no encontrado
+          content: { }
+        '500':
+          description: Error interno del servidor
+          content: { }
+  /group/me/{groupId}/update/invite-code:
+    post:
+      tags:
+        - regenerateInviteCode
+      summary: Permite al usuario autenticado regenerar el código de invitación de un grupo específico
+      operationId: regenerateInviteCode
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Código de invitación regenerado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteCodeResponse'
+        '400':
+          description: Solicitud incorrecta
+          content: { }
+        '401':
+          description: No autorizado
+          content: { }
+        '403':
+          description: Acceso denegado
+          content: { }
+        '404':
+          description: Grupo no encontrado
+          content: { }
+        '500':
+          description: Error interno del servidor
+          content: { }
+  /group/me/{groupId}/promote/{userId}:
+    post:
+      tags:
+        - promoteGroupMember
+      summary: Permite al usuario autenticado promover a un miembro a administrador en un grupo específico
+      operationId: promoteGroupMember
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Miembro promovido a administrador exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupDto'
+        '400':
+          description: Solicitud incorrecta
+          content: { }
+        '401':
+          description: No autorizado
+          content: { }
+        '403':
+          description: Acceso denegado
+          content: { }
+        '404':
+          description: Grupo o miembro no encontrado
+          content: { }
+        '500':
+          description: Error interno del servidor
+          content: { }
+  /group/{groupId}:
+    get:
+      tags:
+        - getGroupById
+      summary: Obtiene un grupo por su ID
+      operationId: getGroupById
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Grupo obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupDto'
+        '400':
+          description: Solicitud incorrecta
+          content: { }
+        '401':
+          description: No autorizado
+          content: { }
+        '403':
+          description: Acceso denegado
+          content: { }
+        '404':
+          description: Grupo no encontrado
+          content: { }
+        '500':
+          description: Error interno del servidor
+          content: { }
+    delete:
+      tags:
+        - deleteGroup
+      summary: Elimina un grupo por su ID
+      operationId: deleteGroup
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Grupo eliminado exitosamente
+          content: { }
+        '400':
+          description: Solicitud incorrecta
+          content: { }
+        '401':
+          description: No autorizado
+          content: { }
+        '403':
+          description: Acceso denegado
+          content: { }
+        '404':
+          description: Grupo no encontrado
+          content: { }
+        '500':
+          description: Error interno del servidor
+          content: { }
+  /group/join/{inviteCode}:
+    post:
+      tags:
+        - joinGroup
+      summary: Permite a un usuario unirse a un grupo utilizando un código de invitación
+      operationId: joinGroup
+      parameters:
+        - name: inviteCode
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usuario unido al grupo exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupDto'
+        '400':
+          description: Solicitud incorrecta
+          content: { }
+        '401':
+          description: No autorizado
+          content: { }
+        '403':
+          description: Acceso denegado
+          content: { }
+        '404':
+          description: Grupo no encontrado o código de invitación inválido
+          content: { }
+        '500':
+          description: Error interno del servidor
+          content: { }
+  /group/join/{inviteCode}/{guestId}:
+    post:
+      tags:
+        - joinGroupAsGuest
+      summary: Permite al usuario unirse al Grupo reemplazando a un miembro invitado
+      operationId: joinGroupAsGuest
+      parameters:
+        - name: inviteCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: guestId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Usuario unido al grupo exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupDto'
+        '400':
+          description: Solicitud incorrecta
+          content: { }
+        '401':
+          description: No autorizado
+          content: { }
+        '403':
+          description: Acceso denegado
+          content: { }
+        '404':
+          description: Grupo no encontrado o código de invitación inválido
+          content: { }
+        '500':
+          description: Error interno del servidor
+          content: { }
+  /group/{groupId}/guest:
+    post:
+      tags:
+        - addGuestMember
+      summary: Permite a un usuario agregar un miembro invitado a un grupo específico
+      operationId: addGuestMember
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuestMemberDto'
+      responses:
+        '200':
+          description: Miembro invitado agregado al grupo exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupDto'
+        '400':
+          description: Solicitud incorrecta
+          content: { }
+        '401':
+          description: No autorizado
+          content: { }
+        '403':
+          description: Acceso denegado
+          content: { }
+        '404':
+          description: Grupo no encontrado
+          content: { }
+        '500':
+          description: Error interno del servidor
+          content: { }
+  /group/{groupId}/leave:
+    post:
+      tags:
+        - leaveGroup
+      summary: Permite a un usuario salir de un grupo específico
+      operationId: leaveGroup
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Usuario salió del grupo exitosamente
+          content: { }
+        '400':
+          description: Solicitud incorrecta
+          content: { }
+        '401':
+          description: No autorizado
+          content: { }
+        '403':
+          description: Acceso denegado
+          content: { }
+        '404':
+          description: Grupo no encontrado
+          content: { }
+        '500':
+          description: Error interno del servidor
+          content: { }
+  /group/{groupId}/kick/{userId}:
+    delete:
+      tags:
+        - removeGroupMember
+      summary: Elimina a un miembro de un grupo específico
+      operationId: removeGroupMember
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Miembro eliminado del grupo exitosamente
+          content: { }
+        '400':
+          description: Solicitud incorrecta
+          content: { }
+        '401':
+          description: No autorizado
+          content: { }
+        '403':
+          description: Acceso denegado
+          content: { }
+        '404':
+          description: Grupo o miembro no encontrado
+          content: { }
+        '500':
+          description: Error interno del servidor
+          content: { }
+components:
+  schemas:
+    CreateGroupRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Grupo de Prueba"
+        currency:
+          type: string
+          enum: [USD, EUR, GBP, JPY]
+          default: "EUR"
+          example: "EUR"
+        description:
+          type: string
+          example: "Este es un grupo de prueba para la API"
+    InviteCodeResponse:
+      type: object
+      properties:
+        inviteCode:
+          type: string
+          example: "INVITE12345"
+    GroupDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        inviteCode:
+          type: string
+        currency:
+          type: string
+          enum: [USD, EUR, GBP, JPY]
+        description:
+          type: string
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupMemberDto'
+    GroupMemberDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: "Jhon Doe"
+        avatarUrl:
+          type: string
+          example: "https://example.com/avatar.jpg"
+    GuestMemberDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Invitado"
+    UpdateGroupDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Grupo de Prueba Actualizado"
+        currency:
+          type: string
+          enum: [USD, EUR, GBP, JPY]
+          default: "EUR"
+          example: "USD"
+        description:
+          type: string
+          example: "Este es un grupo de prueba actualizado para la API"
