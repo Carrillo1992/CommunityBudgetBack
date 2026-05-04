@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
+import com.communitybudget.common.exceptions.exception.BadRequestException;
 
 import java.util.List;
 
@@ -108,4 +110,25 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}/change-password")
+    public ResponseEntity<Void> adminChangePassword(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> request) {
+
+        String newPassword = request.get("newPassword");
+
+        // Validaciones
+        if (newPassword == null || newPassword.trim().isEmpty()) {
+            throw new BadRequestException("La nueva contraseña es requerida");
+        }
+
+        if (newPassword.length() < 8) {
+            throw new BadRequestException("La contraseña debe tener al menos 8 caracteres");
+        }
+
+        userApplicationService.changePasswordByUserId(id, newPassword);
+
+        return ResponseEntity.ok().build();
+    }
 }

@@ -29,4 +29,6 @@ public interface UserService {
 
     void removeAdminRole(final User user);
 
+    void changePasswordByUserId(final Long userId, final String newPassword);
+
 }

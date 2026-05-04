@@ -133,6 +133,11 @@ public class UserApplicationService implements UserDetailsService {
         userService.removeAdminRole(user);
     }
 
+    @Transactional
+    public void changePasswordByUserId(final Long userId, final String newPassword) {
+        userService.changePasswordByUserId(userId, newPassword);
+    }
+
     @Transactional(readOnly = true)
     public UserDTO getUserById(final Long id) {
         return userService.findById(id)

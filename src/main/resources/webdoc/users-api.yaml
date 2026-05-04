@@ -295,6 +295,9 @@ components:
         avatarUrl:
           type: string
           description: URL del avatar del usuario
+        role:
+          type: string
+          description: Rol del usuario (ROLE_USER o ROLE_ADMIN)
 
     UserCreateDTO:
       type: object

@@ -10,6 +10,7 @@ import com.communitybudget.modules.user.domain.valueobjects.PasswordRecovery;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import org.springframework.transaction.annotation.Transactional;
 
 public class PasswordResetServiceImpl implements PasswordResetService {
 
@@ -24,6 +25,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     @Override
+    @Transactional
     public void tokenValidation(final String token, final String newPassword) {
         PasswordRecovery resetPassword = passwordResetRepository.findByToken(token);
         if (resetPassword == null || !isValidToken(resetPassword)) {
@@ -34,6 +36,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     @Override
+    @Transactional
     public String createToken(final String email) {
         if (userRepository.existsByEmail(email)) {
             String token = createNewToken();

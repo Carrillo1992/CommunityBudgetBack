@@ -10,6 +10,7 @@ import com.communitybudget.modules.user.domain.repository.UserRepository;
 import com.communitybudget.modules.user.domain.service.PasswordEncryptor;
 import com.communitybudget.modules.user.domain.service.UserService;
 import com.communitybudget.modules.user.domain.valueobjects.RoleValue;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -109,8 +110,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void changePassword(final String newPassword, final String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
         userRepository.update(User.builder()
                 .id(user.getId())
@@ -151,6 +154,7 @@ public class UserServiceImpl implements UserService {
         Set<Role> updatedRoles = new HashSet<>(user.getRoles() != null ? user.getRoles() : Set.of());
         updatedRoles.removeIf(role -> RoleValue.ADMIN.getValue().equals(role.getName()));
 
+        // Asegurar que al menos tenga el rol USER
         if (updatedRoles.isEmpty()) {
             Role userRole = roleRepository.findByName(RoleValue.USER.getValue())
                     .orElseThrow(() -> new IllegalArgumentException("Role USER not found"));
@@ -166,6 +170,27 @@ public class UserServiceImpl implements UserService {
                 .providerId(user.getProviderId())
                 .createdAt(user.getCreatedAt())
                 .roles(updatedRoles)
+                .build();
+
+        userRepository.update(updatedUser);
+    }
+
+    @Override
+    public void changePasswordByUserId(final Long userId, final String newPassword) {
+        // Buscar el usuario por ID
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        // Crear usuario actualizado con la nueva contraseña encriptada
+        User updatedUser = User.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .password(passwordEncryptor.encode(newPassword))
+                .provider(user.getProvider())
+                .providerId(user.getProviderId())
+                .roles(user.getRoles())
+                .createdAt(user.getCreatedAt())
                 .build();
 
         userRepository.update(updatedUser);
