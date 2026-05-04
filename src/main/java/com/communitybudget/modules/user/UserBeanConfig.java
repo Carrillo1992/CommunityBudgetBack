@@ -1,4 +1,4 @@
-package com.communitybudget.modules.user.infrastructure;
+package com.communitybudget.modules.user;
 
 import com.communitybudget.modules.user.domain.repository.PasswordResetRepository;
 import com.communitybudget.modules.user.domain.repository.RoleRepository;

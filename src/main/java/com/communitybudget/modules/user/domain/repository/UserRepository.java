@@ -15,7 +15,7 @@ public interface UserRepository {
 
     Boolean existsByEmail(final String email);
 
-    void save(final User user);
+    User save(final User user);
 
     void update(final User user);
 
@@ -23,4 +23,3 @@ public interface UserRepository {
 
 
 }
-

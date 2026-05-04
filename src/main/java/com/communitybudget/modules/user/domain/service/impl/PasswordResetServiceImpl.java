@@ -1,7 +1,7 @@
 package com.communitybudget.modules.user.domain.service.impl;
 
-import com.communitybudget.common.exceptions.exception.BadRequestException;
-import com.communitybudget.common.exceptions.exception.ResourceNotFoundException;
+import com.communitybudget.common.utils.StringUtils;
+import com.communitybudget.modules.user.domain.exception.InvalidTokenException;
 import com.communitybudget.modules.user.domain.repository.PasswordResetRepository;
 import com.communitybudget.modules.user.domain.repository.UserRepository;
 import com.communitybudget.modules.user.domain.service.PasswordResetService;
@@ -28,15 +28,9 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     @Transactional
     public void tokenValidation(final String token, final String newPassword) {
         PasswordRecovery resetPassword = passwordResetRepository.findByToken(token);
-
-        if (resetPassword == null) {
-            throw new ResourceNotFoundException("Token inválido o expirado");
+        if (resetPassword == null || !isValidToken(resetPassword)) {
+            throw new InvalidTokenException("Invalid token provided");
         }
-
-        if (resetPassword.getExpTime().isBefore(LocalDateTime.now())) {
-            throw new BadRequestException("El token ha expirado");
-        }
-
         userService.changePassword(newPassword, resetPassword.getEmail());
         passwordResetRepository.deleteByEmail(resetPassword.getEmail());
     }
@@ -47,30 +41,22 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         if (userRepository.existsByEmail(email)) {
             String token = createNewToken();
             LocalDateTime expTime = LocalDateTime.now().plusMinutes(15);
-
             PasswordRecovery recovery = PasswordRecovery.builder()
                     .token(token)
                     .email(email)
                     .expTime(expTime)
                     .build();
-
             passwordResetRepository.save(recovery);
             return token;
         }
         return null;
     }
 
+    private boolean isValidToken(final PasswordRecovery resetPassword) {
+        return resetPassword.getExpTime().isAfter(LocalDateTime.now());
+    }
+
     private String createNewToken() {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder token = new StringBuilder();
-
-        SecureRandom random = new SecureRandom();
-
-        for (int i = 0; i < 6; i++) {
-            int index = random.nextInt(characters.length());
-            token.append(characters.charAt(index));
-        }
-
-        return token.toString();
+        return StringUtils.generateRandomString(6);
     }
 }

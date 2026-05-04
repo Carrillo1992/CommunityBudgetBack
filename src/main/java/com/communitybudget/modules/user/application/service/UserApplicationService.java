@@ -1,14 +1,17 @@
 package com.communitybudget.modules.user.application.service;
 
-import com.communitybudget.application.dto.UserCreateDTO;
-import com.communitybudget.application.dto.UserDTO;
-import com.communitybudget.application.dto.UserUpdateDTO;
+
 import com.communitybudget.common.exceptions.exception.BadRequestException;
+import com.communitybudget.common.exceptions.exception.ConflictException;
 import com.communitybudget.common.exceptions.exception.ResourceNotFoundException;
+import com.communitybudget.modules.user.application.dto.UserCreateDTO;
+import com.communitybudget.modules.user.application.dto.UserDTO;
+import com.communitybudget.modules.user.application.dto.UserUpdateDTO;
 import com.communitybudget.modules.user.application.mapper.UserMapper;
 import com.communitybudget.modules.user.domain.model.User;
 import com.communitybudget.modules.user.domain.service.UserService;
 import com.communitybudget.modules.user.domain.valueobjects.RoleValue;
+import com.communitybudget.modules.user.application.CustomUserDetails;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -36,7 +39,7 @@ public class UserApplicationService implements UserDetailsService {
     }
 
     @Transactional
-    public void registerUser(final UserCreateDTO userDTO) {
+    public UserDTO registerUser(final UserCreateDTO userDTO) {
         User user = User.builder()
                 .id(null)
                 .name(userDTO.getName())
@@ -47,19 +50,26 @@ public class UserApplicationService implements UserDetailsService {
                 .createdAt(null)
                 .build();
 
-        userService.save(user);
+        User savedUser = userService.save(user);
+        return UserMapper.INSTANCE.toDto(savedUser);
     }
 
     @Transactional
     public void updateUser(final String email, final UserUpdateDTO userDTO) {
+        if (userDTO.getEmail() != null && !userDTO.getEmail().equals(email)
+                && userService.findByEmail(userDTO.getEmail()).isPresent()) {
+            throw new ConflictException("User with email " + userDTO.getEmail() + " already exists");
+        }
         User existingUser = userService.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+
         User updatedUser = User.builder()
                 .id(existingUser.getId())
-                .name(userDTO.getName())
-                .email(userDTO.getEmail())
+                .name(userDTO.getName() != null ? userDTO.getName() : existingUser.getName())
+                .email(userDTO.getEmail() != null ? userDTO.getEmail() : existingUser.getEmail())
                 .password(existingUser.getPassword())
+                .avatarUrl(userDTO.getAvatarUrl() != null ? userDTO.getAvatarUrl() : existingUser.getAvatarUrl())
                 .provider(existingUser.getProvider())
                 .providerId(existingUser.getProviderId())
                 .createdAt(existingUser.getCreatedAt())
@@ -83,6 +93,7 @@ public class UserApplicationService implements UserDetailsService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
+    @Transactional
     public void deleteUser(final String email) {
         User existingUser = userService.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -96,7 +107,7 @@ public class UserApplicationService implements UserDetailsService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
         if (existingUser.getEmail().equals(currentUserEmail)) {
-            throw new BadRequestException("Cannot delete your own account using this endpoint. Use DELETE /user/me instead.");
+            throw new BadRequestException("Cannot delete your own account.");
         }
 
         userService.delete(existingUser);
@@ -141,9 +152,10 @@ public class UserApplicationService implements UserDetailsService {
 
         User updatedUser = User.builder()
                 .id(existingUser.getId())
-                .name(userDTO.getName())
-                .email(userDTO.getEmail())
+                .name(userDTO.getName() != null ? userDTO.getName() : existingUser.getName())
+                .email(userDTO.getEmail() != null ? userDTO.getEmail() : existingUser.getEmail())
                 .password(existingUser.getPassword())
+                .avatarUrl(userDTO.getAvatarUrl() != null ? userDTO.getAvatarUrl() : existingUser.getAvatarUrl())
                 .provider(existingUser.getProvider())
                 .providerId(existingUser.getProviderId())
                 .roles(existingUser.getRoles())
@@ -155,7 +167,7 @@ public class UserApplicationService implements UserDetailsService {
 
     @Transactional(readOnly = true)
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
         User user = userService.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
 
@@ -165,10 +177,11 @@ public class UserApplicationService implements UserDetailsService {
                     .collect(Collectors.toList())
                 : List.of(new SimpleGrantedAuthority(RoleValue.USER.getValue()));
 
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .authorities(authorities)
-                .build();
+        return new CustomUserDetails(
+                user.getId(),
+                user.getEmail(),
+                user.getPassword(),
+                authorities
+        );
     }
 }

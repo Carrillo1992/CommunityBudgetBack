@@ -1,10 +1,11 @@
 package com.communitybudget.modules.user.infrastructure.web;
 
-import com.communitybudget.application.dto.*;
 import com.communitybudget.common.exceptions.exception.ResourceNotFoundException;
 import com.communitybudget.config.security.JwtUtils;
-import com.communitybudget.modules.user.application.mapper.UserMapper;
+import com.communitybudget.modules.user.application.dto.*;
 import com.communitybudget.modules.user.application.service.PasswordResetApplicationService;
+import com.communitybudget.modules.user.application.service.UserApplicationService;
+import com.communitybudget.modules.user.domain.exception.AuthenticationException;
 import com.communitybudget.modules.user.domain.model.User;
 import com.communitybudget.modules.user.domain.service.UserService;
 import com.communitybudget.modules.user.domain.valueobjects.RoleValue;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 @RequestMapping("api/v1/auth")
 public class AuthController {
 
+    private final UserApplicationService userApplicationServiceService;
     private final UserService userService;
     private final PasswordResetApplicationService passwordResetService;
     private final AuthenticationManager authenticationManager;
@@ -33,7 +35,8 @@ public class AuthController {
 
     private final String BEARER_PREFIX = "Bearer";
 
-    public AuthController(final UserService userService,final  PasswordResetApplicationService passwordResetService, final AuthenticationManager authenticationManager, final JwtUtils jwtUtils) {
+    public AuthController(final UserApplicationService userApplicationServiceService, final UserService userService, final  PasswordResetApplicationService passwordResetService, final AuthenticationManager authenticationManager, final JwtUtils jwtUtils) {
+        this.userApplicationServiceService = userApplicationServiceService;
         this.userService = userService;
         this.passwordResetService = passwordResetService;
         this.authenticationManager = authenticationManager;
@@ -41,32 +44,37 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@Valid @RequestBody final UserCreateDTO userCreateDTO) {
-        userService.save(UserMapper.INSTANCE.fromCreateDto(userCreateDTO));
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody final UserCreateDTO userCreateDTO) {
+        UserDTO savedUser = userApplicationServiceService.registerUser(userCreateDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> loginUser(@Valid @RequestBody final LoginRequestDTO loginRequestDTO) {
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword()));
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User user = userService.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String accessToken = jwtUtils.generateToken(userDetails, user.getId());
-        String refreshToken = jwtUtils.generateRefreshToken(userDetails.getUsername());
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User user = userService.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        LoginResponseDTO response = new LoginResponseDTO();
-        response.setAccessToken(accessToken);
-        response.setRefreshToken(refreshToken);
-        response.setTokenType("Bearer");
-        response.setExpiresIn(jwtUtils.getAccessTokenExpirationSeconds());
+            String accessToken = jwtUtils.generateToken(userDetails, user.getId());
+            String refreshToken = jwtUtils.generateRefreshToken(userDetails.getUsername());
 
-        return ResponseEntity.ok(response);
+            LoginResponseDTO response = new LoginResponseDTO();
+            response.setAccessToken(accessToken);
+            response.setRefreshToken(refreshToken);
+            response.setTokenType("Bearer");
+            response.setExpiresIn(jwtUtils.getAccessTokenExpirationSeconds());
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            throw new AuthenticationException("Invalid credentials");
+        }
     }
 
     @PostMapping("/refresh")
@@ -108,13 +116,13 @@ public class AuthController {
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestParam("email") final String email) {
        passwordResetService.processPasswordReset(email);
-       return ResponseEntity.ok(HttpStatus.OK);
+       return ResponseEntity.ok().build();
     }
 
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequestDTO request){
         passwordResetService.processTokenValidation(request.getToken(), request.getPassword());
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
 }

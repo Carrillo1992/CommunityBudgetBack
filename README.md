@@ -19,8 +19,12 @@ Este proyecto toma como referencia el funcionamiento de aplicaciones ya existent
 Para el desarrollo del back end se esta utilizando:
 
 - **Java** como lenguaje de programacion principal.
-- **Arquitectura DDD (Domain-Driven Design)** para organizar la logica del negocio de forma estructurada y mantenible.
-- **MySQL** como sistema de gestion de base de datos.
+- **Spring Boot** como framework base del proyecto.
+- **Spring Security** para la autenticación y autorización (basada en JWT y OAuth2 con Google).
+- **Arquitectura Hexagonal (Puertos y Adaptadores)** y principios de **DDD (Domain-Driven Design)** para organizar la logica del negocio de forma estructurada y mantenible.
+- **MySQL** como sistema de gestion de base de datos relacional.
+- **JPA / Hibernate** para el mapeo objeto-relacional (ORM).
+- **MapStruct** para el mapeo de objetos (DTOs a entidades/dominio y viceversa).
 
 ### Front end
 
@@ -28,6 +32,14 @@ Para el desarrollo del front end se esta utilizando:
 
 - **React** como framework para la construccion de la interfaz de usuario.
 - **Tailwind CSS** para el diseno y los estilos visuales de la aplicacion.
+
+## Características principales
+
+- **Gestión de usuarios**: Registro, inicio de sesión (local y con Google), actualización de perfil y cambio de contraseña.
+- **Autenticación segura**: Uso de tokens JWT (Access y Refresh tokens) para mantener sesiones seguras.
+- **Recuperación de contraseña**: Flujo de restablecimiento de contraseña mediante tokens por correo electrónico.
+- **Roles y permisos**: Diferenciación entre usuarios normales y administradores.
+- **Manejo de errores global**: Respuestas de error estructuradas para una mejor experiencia de desarrollo y de usuario.
 
 ## Propuesta de valor
 

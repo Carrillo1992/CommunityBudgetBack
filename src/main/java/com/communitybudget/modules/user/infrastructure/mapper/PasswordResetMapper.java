@@ -6,15 +6,15 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-
 @Mapper
 public interface PasswordResetMapper {
 
     PasswordResetMapper INSTANCE = Mappers.getMapper(PasswordResetMapper.class);
 
-    @Mapping(target = "expTime", source = "expiresAt")
+    @Mapping(target = "expTime", source = "entity.expiresAt")
     PasswordRecovery toDomain(final PasswordResetEntity entity);
 
-    @Mapping(target = "expiresAt", source = "expTime")
+    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "expiresAt", source = "passwordRecovery.expTime")
     PasswordResetEntity toPersistence(final PasswordRecovery passwordRecovery);
 }
