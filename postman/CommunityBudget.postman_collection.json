@@ -381,9 +381,9 @@
 							"raw": "{\n    \"name\": \"Grupo de Prueba\",\n    \"currency\": \"EUR\",\n    \"description\": \"Este es un grupo de prueba para la API\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/group",
+							"raw": "{{baseUrl}}/groups",
 							"host": ["{{baseUrl}}"],
-							"path": ["group"]
+							"path": ["groups"]
 						},
 						"description": "Crea un nuevo grupo"
 					},
@@ -400,9 +400,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/group/me",
+							"raw": "{{baseUrl}}/groups/me",
 							"host": ["{{baseUrl}}"],
-							"path": ["group", "me"]
+							"path": ["groups", "me"]
 						},
 						"description": "Obtiene los grupos a los que pertenece el usuario autenticado"
 					},
@@ -419,9 +419,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/group/me/{{groupId}}",
+							"raw": "{{baseUrl}}/groups/me/{{groupId}}",
 							"host": ["{{baseUrl}}"],
-							"path": ["group", "me", "{{groupId}}"]
+							"path": ["groups", "me", "{{groupId}}"]
 						},
 						"description": "Obtiene un grupo específico al que pertenece el usuario autenticado"
 					},
@@ -446,9 +446,9 @@
 							"raw": "{\n    \"name\": \"Grupo de Prueba Actualizado\",\n    \"currency\": \"USD\",\n    \"description\": \"Este es un grupo de prueba actualizado para la API\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/group/me/{{groupId}}/update",
+							"raw": "{{baseUrl}}/groups/me/{{groupId}}/update",
 							"host": ["{{baseUrl}}"],
-							"path": ["group", "me", "{{groupId}}", "update"]
+							"path": ["groups", "me", "{{groupId}}", "update"]
 						},
 						"description": "Permite al usuario autenticado actualizar la información de un grupo específico"
 					},
@@ -465,9 +465,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/group/me/{{groupId}}/update/invite-code",
+							"raw": "{{baseUrl}}/groups/me/{{groupId}}/update/invite-code",
 							"host": ["{{baseUrl}}"],
-							"path": ["group", "me", "{{groupId}}", "update", "invite-code"]
+							"path": ["groups", "me", "{{groupId}}", "update", "invite-code"]
 						},
 						"description": "Permite al usuario autenticado regenerar el código de invitación de un grupo específico"
 					},
@@ -484,9 +484,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/group/me/{{groupId}}/promote/{{userId}}",
+							"raw": "{{baseUrl}}/groups/me/{{groupId}}/promote/{{userId}}",
 							"host": ["{{baseUrl}}"],
-							"path": ["group", "me", "{{groupId}}", "promote", "{{userId}}"]
+							"path": ["groups", "me", "{{groupId}}", "promote", "{{userId}}"]
 						},
 						"description": "Permite al usuario autenticado promover a un miembro a administrador en un grupo específico"
 					},
@@ -503,9 +503,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/group/join/{{inviteCode}}",
+							"raw": "{{baseUrl}}/groups/join/{{inviteCode}}",
 							"host": ["{{baseUrl}}"],
-							"path": ["group", "join", "{{inviteCode}}"]
+							"path": ["groups", "join", "{{inviteCode}}"]
 						},
 						"description": "Permite a un usuario unirse a un grupo utilizando un código de invitación"
 					},
@@ -522,9 +522,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/group/join/{{inviteCode}}/{{guestId}}",
+							"raw": "{{baseUrl}}/groups/join/{{inviteCode}}/{{guestId}}",
 							"host": ["{{baseUrl}}"],
-							"path": ["group", "join", "{{inviteCode}}", "{{guestId}}"]
+							"path": ["groups", "join", "{{inviteCode}}", "{{guestId}}"]
 						},
 						"description": "Permite al usuario unirse al Grupo reemplazando a un miembro invitado"
 					},
@@ -549,9 +549,9 @@
 							"raw": "{\n    \"name\": \"Invitado\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/group/{{groupId}}/guest",
+							"raw": "{{baseUrl}}/groups/{{groupId}}/guest",
 							"host": ["{{baseUrl}}"],
-							"path": ["group", "{{groupId}}", "guest"]
+							"path": ["groups", "{{groupId}}", "guest"]
 						},
 						"description": "Permite a un usuario agregar un miembro invitado a un grupo específico"
 					},
@@ -568,9 +568,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/group/{{groupId}}/leave",
+							"raw": "{{baseUrl}}/groups/{{groupId}}/leave",
 							"host": ["{{baseUrl}}"],
-							"path": ["group", "{{groupId}}", "leave"]
+							"path": ["groups", "{{groupId}}", "leave"]
 						},
 						"description": "Permite a un usuario salir de un grupo específico"
 					},
@@ -587,9 +587,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/group/{{groupId}}/kick/{{userId}}",
+							"raw": "{{baseUrl}}/groups/{{groupId}}/kick/{{userId}}",
 							"host": ["{{baseUrl}}"],
-							"path": ["group", "{{groupId}}", "kick", "{{userId}}"]
+							"path": ["groups", "{{groupId}}", "kick", "{{userId}}"]
 						},
 						"description": "Elimina a un miembro de un grupo específico"
 					},
@@ -606,9 +606,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/group/{{groupId}}",
+							"raw": "{{baseUrl}}/groups/{{groupId}}",
 							"host": ["{{baseUrl}}"],
-							"path": ["group", "{{groupId}}"]
+							"path": ["groups", "{{groupId}}"]
 						},
 						"description": "Elimina un grupo por su ID"
 					},
@@ -753,9 +753,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/group",
+							"raw": "{{baseUrl}}/groups",
 							"host": ["{{baseUrl}}"],
-							"path": ["group"]
+							"path": ["groups"]
 						},
 						"description": "Obtiene una lista de todos los grupos. Requiere rol ADMIN."
 					},
@@ -772,9 +772,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/group/{{groupId}}",
+							"raw": "{{baseUrl}}/groups/{{groupId}}",
 							"host": ["{{baseUrl}}"],
-							"path": ["group", "{{groupId}}"]
+							"path": ["groups", "{{groupId}}"]
 						},
 						"description": "Obtiene un grupo por su ID. Requiere rol ADMIN."
 					},
