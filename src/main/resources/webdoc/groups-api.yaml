@@ -13,7 +13,7 @@ security:
   - BearerAuth: [ ]
 
 paths:
-  /group:
+  /groups:
     get:
       tags:
         - getGroups
@@ -67,7 +67,7 @@ paths:
         '500':
           description: Error interno del servidor
           content: { }
-  /group/me:
+  /groups/me:
     get:
       tags:
         - getMyGroups
@@ -92,7 +92,7 @@ paths:
           description: Error interno del servidor
           content: { }
 
-  /group/me/{groupId}:
+  /groups/me/{groupId}:
     get:
       tags:
         - getMyGroupById
@@ -127,7 +127,7 @@ paths:
         '500':
           description: Error interno del servidor
           content: { }
-  /group/me/{groupId}/update:
+  /groups/me/{groupId}/update:
     put:
       tags:
         - updateGroup
@@ -168,7 +168,7 @@ paths:
         '500':
           description: Error interno del servidor
           content: { }
-  /group/me/{groupId}/update/invite-code:
+  /groups/me/{groupId}/update/invite-code:
     post:
       tags:
         - regenerateInviteCode
@@ -203,7 +203,7 @@ paths:
         '500':
           description: Error interno del servidor
           content: { }
-  /group/me/{groupId}/promote/{userId}:
+  /groups/me/{groupId}/promote/{userId}:
     post:
       tags:
         - promoteGroupMember
@@ -244,7 +244,7 @@ paths:
         '500':
           description: Error interno del servidor
           content: { }
-  /group/{groupId}:
+  /groups/{groupId}:
     get:
       tags:
         - getGroupById
@@ -310,7 +310,7 @@ paths:
         '500':
           description: Error interno del servidor
           content: { }
-  /group/join/{inviteCode}:
+  /groups/join/{inviteCode}:
     post:
       tags:
         - joinGroup
@@ -344,7 +344,7 @@ paths:
         '500':
           description: Error interno del servidor
           content: { }
-  /group/join/{inviteCode}/{guestId}:
+  /groups/join/{inviteCode}/{guestId}:
     post:
       tags:
         - joinGroupAsGuest
@@ -384,7 +384,7 @@ paths:
         '500':
           description: Error interno del servidor
           content: { }
-  /group/{groupId}/guest:
+  /groups/{groupId}/guest:
     post:
       tags:
         - addGuestMember
@@ -425,7 +425,7 @@ paths:
         '500':
           description: Error interno del servidor
           content: { }
-  /group/{groupId}/leave:
+  /groups/{groupId}/leave:
     post:
       tags:
         - leaveGroup
@@ -457,7 +457,7 @@ paths:
         '500':
           description: Error interno del servidor
           content: { }
-  /group/{groupId}/kick/{userId}:
+  /groups/{groupId}/kick/{userId}:
     delete:
       tags:
         - removeGroupMember
