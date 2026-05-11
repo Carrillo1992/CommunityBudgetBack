@@ -47,7 +47,7 @@ public interface GroupMapper {
     @Mapping(target = "members", expression = "java(List.of(userToGroupMemberDto(owner)))")
     GroupDto createdGroupToGroupDto(final Group group , final User owner);
 
-
+    @Mapping(target = "ownerId", source = "ownerId")
     GroupDto groupEntityToGroupDto(GroupEntity groupEntity);
 
     @Mapping(target = "id", source = "user.id")

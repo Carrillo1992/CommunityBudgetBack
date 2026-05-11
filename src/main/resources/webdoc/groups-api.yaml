@@ -505,7 +505,7 @@ components:
           example: "Grupo de Prueba"
         currency:
           type: string
-          enum: [USD, EUR, GBP, JPY]
+          enum: [ USD, EUR, GBP, JPY ]
           default: "EUR"
           example: "EUR"
         description:
@@ -527,9 +527,12 @@ components:
           type: string
         inviteCode:
           type: string
+        ownerId:
+          type: integer
+          format: int64
         currency:
           type: string
-          enum: [USD, EUR, GBP, JPY]
+          enum: [ USD, EUR, GBP, JPY ]
         description:
           type: string
         members:
@@ -563,7 +566,7 @@ components:
           example: "Grupo de Prueba Actualizado"
         currency:
           type: string
-          enum: [USD, EUR, GBP, JPY]
+          enum: [ USD, EUR, GBP, JPY ]
           default: "EUR"
           example: "USD"
         description:
