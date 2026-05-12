@@ -194,36 +194,51 @@
                     <generateModels>true</generateModels>
                     <generateApis>false</generateApis>
                     <generateSupportingFiles>false</generateSupportingFiles>
+                    <inputSpec>src/main/resources/webdoc/users-api.yaml</inputSpec>
                     <configOptions>
                         <useSpringBoot3>true</useSpringBoot3>
+                        <dateLibrary>java8-localdatetime</dateLibrary>
                     </configOptions>
                 </configuration>
                 <executions>
                     <!-- Generate Users API using OpenAPI Generator -->
                     <execution>
                         <id>generate-users-api</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/webdoc/users-api.yaml</inputSpec>
+                            <inputSpec>src/main/resources/webdoc/users-api.yaml</inputSpec>
                             <modelPackage>com.communitybudget.modules.user.application.dto</modelPackage>
                         </configuration>
                     </execution>
                     <!-- Generate Groups API using OpenAPI Generator -->
                     <execution>
                         <id>generate-groups-api</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/webdoc/groups-api.yaml</inputSpec>
+                            <inputSpec>src/main/resources/webdoc/groups-api.yaml</inputSpec>
                             <modelPackage>com.communitybudget.modules.group.application.dto</modelPackage>
+                        </configuration>
+                    </execution>
+                    <!-- Generate Expenses API using OpenAPI Generator -->
+                    <execution>
+                        <id>generate-expenses-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>src/main/resources/webdoc/expenses-api.yaml</inputSpec>
+                            <modelPackage>com.communitybudget.modules.expenses.application.dto</modelPackage>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 </project>

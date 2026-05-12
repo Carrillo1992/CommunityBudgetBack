@@ -617,6 +617,161 @@
 			]
 		},
 		{
+			"name": "Expenses",
+			"description": "Operaciones relacionadas con gastos",
+			"item": [
+				{
+					"name": "Create Expense",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Cena de equipo\",\n    \"amount\": 50.0,\n    \"date\": \"2024-03-24T15:30:00\",\n    \"paidBy\": 1,\n    \"splits\": [\n        {\n            \"user\": { \"id\": 1 },\n            \"amount\": 25.0\n        },\n        {\n            \"user\": { \"id\": 2 },\n            \"amount\": 25.0\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/groups/{{groupId}}/expenses",
+							"host": ["{{baseUrl}}"],
+							"path": ["groups", "{{groupId}}", "expenses"]
+						},
+						"description": "Crea un nuevo gasto en un grupo"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Expense",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Cena de equipo actualizada\",\n    \"amount\": 60.0,\n    \"date\": \"2024-03-24T15:30:00\",\n    \"paidBy\": 1,\n    \"splits\": [\n        {\n            \"user\": { \"id\": 1 },\n            \"amount\": 30.0\n        },\n        {\n            \"user\": { \"id\": 2 },\n            \"amount\": 30.0\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/groups/{{groupId}}/expenses/{{expenseId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["groups", "{{groupId}}", "expenses", "{{expenseId}}"]
+						},
+						"description": "Actualiza un gasto existente en un grupo"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Expense",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/groups/{{groupId}}/expenses/{{expenseId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["groups", "{{groupId}}", "expenses", "{{expenseId}}"]
+						},
+						"description": "Elimina un gasto de un grupo"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Expenses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/groups/{{groupId}}/expenses",
+							"host": ["{{baseUrl}}"],
+							"path": ["groups", "{{groupId}}", "expenses"]
+						},
+						"description": "Obtiene todos los gastos de un grupo"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expense By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/groups/{{groupId}}/expenses/{{expenseId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["groups", "{{groupId}}", "expenses", "{{expenseId}}"]
+						},
+						"description": "Obtiene un gasto específico de un grupo"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Settlement Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/groups/{{groupId}}/settlement",
+							"host": ["{{baseUrl}}"],
+							"path": ["groups", "{{groupId}}", "settlement"]
+						},
+						"description": "Obtiene el estado de liquidación de los gastos del grupo"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expense Summary",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/groups/{{groupId}}/balance",
+							"host": ["{{baseUrl}}"],
+							"path": ["groups", "{{groupId}}", "balance"]
+						},
+						"description": "Obtiene un resumen de gastos por miembro del grupo"
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Admin",
 			"description": "Operaciones de administración (requiere rol ADMIN)",
 			"item": [
