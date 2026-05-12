@@ -8,6 +8,7 @@ import com.communitybudget.modules.user.application.dto.UserCreateDTO;
 import com.communitybudget.modules.user.application.dto.UserDTO;
 import com.communitybudget.modules.user.application.dto.UserUpdateDTO;
 import com.communitybudget.modules.user.application.mapper.UserMapper;
+import com.communitybudget.modules.user.domain.model.Role;
 import com.communitybudget.modules.user.domain.model.User;
 import com.communitybudget.modules.user.domain.service.UserService;
 import com.communitybudget.modules.user.domain.valueobjects.RoleValue;
@@ -34,7 +35,18 @@ public class UserApplicationService implements UserDetailsService {
     @Transactional(readOnly = true)
     public List<UserDTO> getAllUsers() {
         return userService.findAll().stream()
-                .map(UserMapper.INSTANCE::toDto)
+                .map(user -> {
+                    UserDTO dto = UserMapper.INSTANCE.toDto(user);
+
+                    // Añadir el rol manualmente
+                    String roleName = user.getRoles().stream()
+                            .findFirst()
+                            .map(Role::getName)
+                            .orElse("ROLE_USER");
+                    dto.setRole(roleName);
+
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
