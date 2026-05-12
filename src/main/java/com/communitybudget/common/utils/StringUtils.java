@@ -17,7 +17,7 @@ public class StringUtils {
     }
 
     public static String generateRandomEmail() {
-        return generateRandomString(10) + "@guest.com";
+        return generateRandomString(10) + "@communitybudget.com";
     }
 
 }

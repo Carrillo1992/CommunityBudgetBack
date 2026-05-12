@@ -1,0 +1,332 @@
+openapi: 3.1.0
+info:
+  title: CommunityBudget API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name: Expenses
+    description: Operaciones relacionadas con gastos
+
+security:
+  - BearerAuth: [ ]
+
+paths:
+  /groups/{groupId}/expenses:
+    get:
+      tags:
+        - Expenses
+      summary: Obtiene la lista de gastos de un grupo
+      operationId: getExpensesByGroup
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Lista de gastos obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExpenseDto'
+        '401':
+          description: No autorizado
+        '403':
+          description: Acceso denegado
+        '404':
+          description: Grupo no encontrado
+    post:
+      tags:
+        - Expenses
+      summary: Crea un nuevo gasto en un grupo
+      operationId: createExpense
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExpenseRequest'
+      responses:
+        '201':
+          description: Gasto creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpenseDto'
+        '400':
+          description: Datos de entrada inválidos
+        '404':
+          description: Grupo o pagador no encontrado
+
+  /groups/{groupId}/expenses/{expenseId}:
+    get:
+      tags:
+        - Expenses
+      summary: Obtiene los detalles de un gasto específico
+      operationId: getExpenseById
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: expenseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Gasto obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpenseDto'
+        '404':
+          description: Gasto no encontrado
+    put:
+      tags:
+        - Expenses
+      summary: Actualiza un gasto existente
+      operationId: updateExpense
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: expenseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateExpenseRequest'
+      responses:
+        '200':
+          description: Gasto actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpenseDto'
+        '400':
+          description: Datos de entrada inválidos
+        '404':
+          description: Gasto no encontrado
+    delete:
+      tags:
+        - Expenses
+      summary: Elimina un gasto
+      operationId: deleteExpense
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: expenseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Gasto eliminado exitosamente
+        '404':
+          description: Gasto no encontrado
+
+  /groups/{groupId}/settlement:
+    get:
+      tags:
+        - Expenses
+      summary: Obtiene el estado de liquidación de los gastos del grupo
+      operationId: getSettlementStatus
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Estado de liquidación obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SettleUpRequest'
+        '404':
+          description: Grupo no encontrado
+
+  /groups/{groupId}/balance:
+    get:
+      tags:
+        - Expenses
+      summary: Obtiene un resumen de gastos por miembro del grupo
+      operationId: getExpenseSummary
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Resumen de gastos obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SettleUpRequest'
+        '404':
+          description: Grupo no encontrado
+
+components:
+  schemas:
+    ExpenseDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        description:
+          type: string
+        amount:
+          type: number
+          format: double
+        date:
+          type: string
+          format: date-time
+        paidBy:
+          $ref: '#/components/schemas/UserDto'
+        splits:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpenseSplitDto'
+
+    ExpenseSplitDto:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserDto'
+        amount:
+          type: number
+          format: double
+
+    CreateExpenseRequest:
+      type: object
+      required:
+        - description
+        - amount
+        - paidBy
+      properties:
+        description:
+          type: string
+          example: "Cena de equipo"
+        amount:
+          type: number
+          format: double
+          example: 50.0
+        date:
+          type: string
+          format: date-time
+          example: "2024-03-24T15:30:00"
+        paidBy:
+          type: integer
+          format: int64
+          description: ID del miembro que realizó el pago
+        splits:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpenseSplitDto'
+
+    UpdateExpenseRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Descripción del gasto
+        amount:
+          type: number
+          format: double
+          description: Monto total del gasto
+        date:
+          type: string
+          format: date-time
+          description: Fecha del gasto en formato ISO 8601
+        paidBy:
+          type: integer
+          format: int64
+          description: ID del miembro que realizó el pago
+        splits:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpenseSplitDto'
+
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        avatarUrl:
+          type: string
+          nullable: true
+
+      ExpenseSplitDto:
+        type: object
+        properties:
+          user:
+            $ref: '#/components/schemas/UserDto'
+          amount:
+            type: number
+            format: double
+
+    SettleUpRequest:
+      type: object
+      required:
+        - payerId
+        - receiverId
+        - amount
+      properties:
+        payerId:
+          type: integer
+          format: int64
+          description: ID del que envía el dinero
+        receiverId:
+          type: integer
+          format: int64
+          description: ID del que recibe el dinero
+        amount:
+          type: number
+          format: double
+          description: Monto del dinero que se va a transferir
