@@ -30,7 +30,7 @@ public class ExpenseServiceApplication {
     @Transactional
     public ExpenseDto createExpense(final CreateExpenseRequest expenseDto , final Long groupId) {
         return Optional.ofNullable(expenseDto)
-                .map(request -> expenseMapper.toDomain(expenseDto, groupId))
+                .map(request -> expenseMapper.createExpenseToDomain(expenseDto, groupId))
                 .map(expensesService::createExpense)
                 .map(expenseMapper::toDto)
                 .orElseThrow(() -> new IllegalArgumentException("Expense data cannot be null"));
@@ -68,9 +68,5 @@ public class ExpenseServiceApplication {
                 .map(expenseMapper::entitiesToDtos)
                 .orElseThrow(() -> new IllegalArgumentException("No expenses found for group id: " + groupId));
     }
-
-
-
-
 
 }
