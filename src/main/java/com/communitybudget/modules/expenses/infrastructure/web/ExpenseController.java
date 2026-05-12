@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController("/groups")
+@RestController
+@RequestMapping("/api/v1/groups")
 public class ExpenseController {
 
     private final ExpenseServiceApplication expenseServiceApplication;
@@ -18,31 +19,31 @@ public class ExpenseController {
         this.expenseServiceApplication = expenseServiceApplication;
     }
 
-    @PostMapping
-    public ResponseEntity<ExpenseDto> createExpense(@PathVariable final Long groupId, final CreateExpenseRequest createExpenseRequest) {
+    @PostMapping("/{groupId}/expenses")
+    public ResponseEntity<ExpenseDto> createExpense(@PathVariable final Long groupId, @RequestBody final CreateExpenseRequest createExpenseRequest) {
         final ExpenseDto createdExpense = expenseServiceApplication.createExpense(createExpenseRequest , groupId);
         return ResponseEntity.ok(createdExpense);
     }
 
-    @PutMapping("{groupId}/expenses/{expenseId}")
-    public ResponseEntity<ExpenseDto> updateExpense(@PathVariable final Long groupId,final Long expenseId, final UpdateExpenseRequest updateExpenseRequest) {
+    @PutMapping("/{groupId}/expenses/{expenseId}")
+    public ResponseEntity<ExpenseDto> updateExpense(@PathVariable final Long groupId, @PathVariable final Long expenseId, @RequestBody final UpdateExpenseRequest updateExpenseRequest) {
         final ExpenseDto updatedExpense = expenseServiceApplication.updateExpense(updateExpenseRequest, groupId , expenseId);
         return ResponseEntity.ok(updatedExpense);
     }
 
-    @DeleteMapping("{groupId}/expenses/{expenseId}")
+    @DeleteMapping("/{groupId}/expenses/{expenseId}")
     public ResponseEntity<Void> deleteExpense(@PathVariable final Long groupId, @PathVariable final Long expenseId) {
         expenseServiceApplication.deleteExpense(expenseId, groupId);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
+    @GetMapping("/{groupId}/expenses")
     public ResponseEntity<List<ExpenseDto>> getAllExpenses(@PathVariable final Long groupId) {
         final List<ExpenseDto> expenses = expenseServiceApplication.obtainExpensesOfGroupId(groupId);
         return ResponseEntity.ok(expenses);
     }
 
-    @GetMapping("{groupId}/expenses/{expenseId}")
+    @GetMapping("/{groupId}/expenses/{expenseId}")
     public ResponseEntity<ExpenseDto> getExpenseById(@PathVariable final Long expenseId, @PathVariable final Long groupId) {
         final ExpenseDto expense = expenseServiceApplication.obtainExpenseById(expenseId, groupId);
         return ResponseEntity.ok(expense);
