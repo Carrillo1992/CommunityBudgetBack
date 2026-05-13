@@ -1,5 +1,7 @@
 package com.communitybudget.modules.expenses.domain.service.impl;
 
+import com.communitybudget.common.exceptions.exception.GroupRequestException;
+import com.communitybudget.common.exceptions.exception.ResourceNotFoundException;
 import com.communitybudget.modules.expenses.domain.model.Expense;
 import com.communitybudget.modules.expenses.domain.repository.ExpensesRepository;
 import com.communitybudget.modules.expenses.domain.service.ExpensesService;
@@ -51,12 +53,12 @@ public class ExpensesServiceImpl implements ExpensesService {
     @Override
     public Expense getExpenseById(final Long expenseId) {
         return expensesRepository.findById(expenseId)
-                .orElseThrow(() -> new IllegalArgumentException("Expense not found with id: " + expenseId));
+                .orElseThrow(() -> new ResourceNotFoundException("Expense not found with id: " + expenseId));
     }
 
     private Expense getExpenseOrThrow(final Long groupId) {
         return expensesRepository.findById(groupId)
-                .orElseThrow(() -> new IllegalArgumentException("No expenses found for group id: " + groupId));
+                .orElseThrow(() -> new ResourceNotFoundException("No expenses found for group id: " + groupId));
     }
 
     private void validateGroupAndMembers(final Expense expense) {
@@ -67,12 +69,12 @@ public class ExpensesServiceImpl implements ExpensesService {
                 .toList();
 
         if (!memberIds.contains(expense.getPaidByUserId())) {
-            throw new IllegalArgumentException("Payer is not a member of the group");
+            throw new GroupRequestException("Payer is not a member of the group");
         }
 
         expense.getShares().forEach(share -> {
             if (!memberIds.contains(share.getUserId())) {
-                throw new IllegalArgumentException("User in shares is not a member of the group: " + share.getUserId());
+                throw new GroupRequestException("User in shares is not a member of the group: " + share.getUserId());
             }
         });
     }
