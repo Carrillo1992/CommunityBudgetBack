@@ -3,18 +3,26 @@ package com.communitybudget.modules.expenses.domain.service.impl;
 import com.communitybudget.modules.expenses.domain.model.Expense;
 import com.communitybudget.modules.expenses.domain.repository.ExpensesRepository;
 import com.communitybudget.modules.expenses.domain.service.ExpensesService;
+import com.communitybudget.modules.group.domain.model.Group;
+import com.communitybudget.modules.group.domain.repository.GroupRepository;
+import com.communitybudget.modules.group.domain.valueobjects.GroupMember;
 
 import java.util.List;
 
 public class ExpensesServiceImpl implements ExpensesService {
 
     private final ExpensesRepository expensesRepository;
+    private final GroupRepository groupRepository;
 
-    public ExpensesServiceImpl(final ExpensesRepository expensesRepository) {
+    public ExpensesServiceImpl(final ExpensesRepository expensesRepository, final GroupRepository groupRepository) {
         this.expensesRepository = expensesRepository;
+        this.groupRepository = groupRepository;
     }
+
     @Override
     public Expense createExpense(final Expense expense) {
+        validateGroupAndMembers(expense);
+
         expense.validateMath();
         expense.setIsSettled(false);
         return expensesRepository.save(expense);
@@ -23,6 +31,7 @@ public class ExpensesServiceImpl implements ExpensesService {
 
     @Override
     public Expense updateExpense(final Expense updateExpense) {
+        validateGroupAndMembers(updateExpense);
         Expense existingExpense = getExpenseOrThrow(updateExpense.getId());
         updateExpense.validateMath();
         existingExpense.updateData(updateExpense);
@@ -48,5 +57,23 @@ public class ExpensesServiceImpl implements ExpensesService {
     private Expense getExpenseOrThrow(final Long groupId) {
         return expensesRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("No expenses found for group id: " + groupId));
+    }
+
+    private void validateGroupAndMembers(final Expense expense) {
+        Group group = groupRepository.findById(expense.getGroupId());
+
+        List<Long> memberIds = group.getMembers().stream()
+                .map(GroupMember::getUserId)
+                .toList();
+
+        if (!memberIds.contains(expense.getPaidByUserId())) {
+            throw new IllegalArgumentException("Payer is not a member of the group");
+        }
+
+        expense.getShares().forEach(share -> {
+            if (!memberIds.contains(share.getUserId())) {
+                throw new IllegalArgumentException("User in shares is not a member of the group: " + share.getUserId());
+            }
+        });
     }
 }

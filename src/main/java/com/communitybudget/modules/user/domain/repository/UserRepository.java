@@ -11,6 +11,8 @@ public interface UserRepository {
 
     Optional<User> findById(final Long id);
 
+    List<User> findAllById(final List<Long> ids);
+
     Optional<User> findByEmail(final String email);
 
     Boolean existsByEmail(final String email);

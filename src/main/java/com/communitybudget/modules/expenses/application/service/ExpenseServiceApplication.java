@@ -4,10 +4,15 @@ package com.communitybudget.modules.expenses.application.service;
 import com.communitybudget.modules.expenses.application.dto.CreateExpenseRequest;
 import com.communitybudget.modules.expenses.application.dto.ExpenseDto;
 import com.communitybudget.modules.expenses.application.dto.UpdateExpenseRequest;
+import com.communitybudget.modules.expenses.application.dto.UserDto;
 import com.communitybudget.modules.expenses.application.mapper.ExpenseMapper;
+import com.communitybudget.modules.expenses.domain.model.Expense;
 import com.communitybudget.modules.expenses.domain.service.ExpensesService;
+import com.communitybudget.modules.expenses.domain.valueobjects.ExpenseShare;
 import com.communitybudget.modules.expenses.infrastructure.persistence.ExpenseReadRepository;
 import com.communitybudget.modules.expenses.infrastructure.persistence.entity.ExpenseEntity;
+import com.communitybudget.modules.user.domain.model.User;
+import com.communitybudget.modules.user.domain.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +25,13 @@ public class ExpenseServiceApplication {
     private final ExpensesService expensesService;
     private final ExpenseReadRepository expenseRepository;
     private final ExpenseMapper expenseMapper;
+    private final UserService userService;
 
-    public ExpenseServiceApplication(final ExpensesService expensesService, ExpenseReadRepository expenseRepository, ExpenseMapper expenseMapper) {
+    public ExpenseServiceApplication(final ExpensesService expensesService, ExpenseReadRepository expenseRepository, ExpenseMapper expenseMapper, UserService userService) {
         this.expensesService = expensesService;
         this.expenseRepository = expenseRepository;
         this.expenseMapper = expenseMapper;
+        this.userService = userService;
     }
 
     @Transactional
@@ -32,7 +39,7 @@ public class ExpenseServiceApplication {
         return Optional.ofNullable(expenseDto)
                 .map(request -> expenseMapper.createExpenseToDomain(expenseDto, groupId))
                 .map(expensesService::createExpense)
-                .map(expenseMapper::toDto)
+                .flatMap(this::toDto)
                 .orElseThrow(() -> new IllegalArgumentException("Expense data cannot be null"));
     }
 
@@ -41,7 +48,7 @@ public class ExpenseServiceApplication {
         return Optional.ofNullable(expenseRequest)
                 .map(request -> expenseMapper.UpdateDtoToDomain(request , groupId, expenseId))
                 .map(expensesService::updateExpense)
-                .map(expenseMapper::toDto)
+                .flatMap(this::toDto)
                 .orElseThrow(() -> new IllegalArgumentException("Expense data cannot be null"));
     }
 
@@ -69,4 +76,13 @@ public class ExpenseServiceApplication {
                 .orElseThrow(() -> new IllegalArgumentException("No expenses found for group id: " + groupId));
     }
 
+
+    private  Optional<ExpenseDto> toDto(final Expense expense) {
+        List<Long> userIds = new java.util.ArrayList<>((expense.getShares().stream().map(ExpenseShare::getUserId).toList()));
+        if (!userIds.contains(expense.getPaidByUserId())) {
+            userIds.add(expense.getPaidByUserId());
+        }
+        List<User> users = userService.findAllByIds(userIds);
+        return Optional.ofNullable(expenseMapper.toDto(expense, users));
+    }
 }

@@ -8,8 +8,6 @@ import com.communitybudget.modules.group.infrastructure.persistence.common.JpaSp
 import com.communitybudget.modules.group.infrastructure.persistence.entity.GroupEntity;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public class GroupRepositoryImpl implements GroupRepository {
 
@@ -41,6 +39,11 @@ public class GroupRepositoryImpl implements GroupRepository {
     public Group findByInviteCode(final String inviteCode) {
         return groupRepository.findByInviteCode(inviteCode).map(groupMapper::entityToGroup)
                 .orElseThrow(() -> new GroupNotFoundException("Group not found with invite code: " + inviteCode));
+    }
+
+    @Override
+    public Boolean existsById(Long groupId) {
+        return groupRepository.existsById(groupId);
     }
 
     @Override

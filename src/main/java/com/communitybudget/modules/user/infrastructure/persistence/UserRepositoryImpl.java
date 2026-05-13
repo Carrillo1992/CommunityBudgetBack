@@ -33,6 +33,13 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public List<User> findAllById(List<Long> ids) {
+        return userRepository.findAllById(ids)
+                .stream().map(UserMapper.INSTANCE::toDomain)
+                .toList();
+    }
+
+    @Override
     public Optional<User> findByEmail(final String email) {
         return userRepository.findByEmail(email)
                 .map(UserMapper.INSTANCE::toDomain);
