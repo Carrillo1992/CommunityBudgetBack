@@ -19,7 +19,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ExpenseMapper {
 
-
     @Mapping(target = "groupId", source = "groupId")
     @Mapping(target = "amount", source = "expenseDTO.amount")
     @Mapping(target = "description", source = "expenseDTO.description")
@@ -40,6 +39,8 @@ public interface ExpenseMapper {
     Expense UpdateDtoToDomain(final UpdateExpenseRequest expenseDTO, final Long groupId, final Long expenseId);
 
     List<ExpenseDto> entitiesToDtos(final List<ExpenseEntity> expenses);
+
+    @Mapping(target = "splits", source = "shares")
     ExpenseDto entityToDto(final ExpenseEntity expense);
 
     ExpenseEntity dtoToEntity(final ExpenseDto expenseDTO);
@@ -67,22 +68,22 @@ public interface ExpenseMapper {
     @Mapping(target = "userId", source = "user.id")
     ExpenseShare shareEntityToDomain(ExpenseShareEntity expenseShareEntity);
 
+    // ✅ NUEVO: Mapeo de ExpenseShareEntity a ExpenseSplitDto
+    @Mapping(target = "user", source = "user")
+    @Mapping(target = "amount", source = "amount")
+    ExpenseSplitDto shareEntityToSplitDto(ExpenseShareEntity shareEntity);
+
     default List<ExpenseShare> splitDtoListToDomainList(final List<ExpenseSplitDto> splitDtos) {
         if (splitDtos == null) {
             return null;
         }
-        return splitDtos.stream()
-                .map(this::splitDtoToDomain)
-                .toList();
+        return splitDtos.stream().map(this::splitDtoToDomain).toList();
     }
 
     default ExpenseShare splitDtoToDomain(final ExpenseSplitDto splitDto) {
         if (splitDto == null || splitDto.getUser() == null || splitDto.getUser().getId() == null) {
             return null;
         }
-        return ExpenseShare.builder()
-                .userId(splitDto.getUser().getId())
-                .amount(BigDecimal.valueOf(splitDto.getAmount()))
-                .build();
+        return ExpenseShare.builder().userId(splitDto.getUser().getId()).amount(BigDecimal.valueOf(splitDto.getAmount())).build();
     }
 }
