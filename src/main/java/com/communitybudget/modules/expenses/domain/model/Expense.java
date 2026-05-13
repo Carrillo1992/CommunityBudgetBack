@@ -1,5 +1,6 @@
 package com.communitybudget.modules.expenses.domain.model;
 
+import com.communitybudget.common.exceptions.exception.BadRequestException;
 import com.communitybudget.modules.expenses.domain.valueobjects.Category;
 import com.communitybudget.modules.expenses.domain.valueobjects.ExpenseShare;
 import lombok.Builder;
@@ -40,7 +41,7 @@ public class Expense {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         if (totalShares.compareTo(this.amount) != 0) {
-            throw new IllegalStateException("Total shares must equal the total expense amount");
+            throw new BadRequestException("Total shares must equal the total expense amount");
         }
     }
 

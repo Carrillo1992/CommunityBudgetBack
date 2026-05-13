@@ -1,11 +1,7 @@
 package com.communitybudget.common.exceptions;
 
 import com.communitybudget.common.exceptions.dto.ErrorResponse;
-import com.communitybudget.common.exceptions.exception.BadRequestException;
-import com.communitybudget.common.exceptions.exception.ConflictException;
-import com.communitybudget.common.exceptions.exception.ResourceNotFoundException;
-import com.communitybudget.common.exceptions.exception.UnauthorizedException;
-import com.communitybudget.common.exceptions.exception.GroupRequestException;
+import com.communitybudget.common.exceptions.exception.*;
 import com.communitybudget.modules.user.domain.exception.AuthenticationException;
 import com.communitybudget.modules.user.domain.exception.InvalidPasswordException;
 import com.communitybudget.modules.user.domain.exception.InvalidTokenException;
@@ -76,6 +72,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex) {
         ErrorResponse error = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    @ExceptionHandler(ExpenseException.class)
+    public ResponseEntity<ErrorResponse> handleExpenseException(ExpenseException ex) {
+        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(Exception.class)

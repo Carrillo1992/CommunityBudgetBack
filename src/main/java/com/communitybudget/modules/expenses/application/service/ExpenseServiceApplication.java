@@ -1,10 +1,11 @@
 package com.communitybudget.modules.expenses.application.service;
 
 
+import com.communitybudget.common.exceptions.exception.ExpenseException;
+import com.communitybudget.common.exceptions.exception.ResourceNotFoundException;
 import com.communitybudget.modules.expenses.application.dto.CreateExpenseRequest;
 import com.communitybudget.modules.expenses.application.dto.ExpenseDto;
 import com.communitybudget.modules.expenses.application.dto.UpdateExpenseRequest;
-import com.communitybudget.modules.expenses.application.dto.UserDto;
 import com.communitybudget.modules.expenses.application.mapper.ExpenseMapper;
 import com.communitybudget.modules.expenses.domain.model.Expense;
 import com.communitybudget.modules.expenses.domain.service.ExpensesService;
@@ -40,7 +41,7 @@ public class ExpenseServiceApplication {
                 .map(request -> expenseMapper.createExpenseToDomain(expenseDto, groupId))
                 .map(expensesService::createExpense)
                 .flatMap(this::toDto)
-                .orElseThrow(() -> new IllegalArgumentException("Expense data cannot be null"));
+                .orElseThrow(() -> new ExpenseException("Expense data cannot be null"));
     }
 
     @Transactional
@@ -49,14 +50,14 @@ public class ExpenseServiceApplication {
                 .map(request -> expenseMapper.UpdateDtoToDomain(request , groupId, expenseId))
                 .map(expensesService::updateExpense)
                 .flatMap(this::toDto)
-                .orElseThrow(() -> new IllegalArgumentException("Expense data cannot be null"));
+                .orElseThrow(() -> new ExpenseException("Expense data cannot be null"));
     }
 
     @Transactional
     public void deleteExpense(final Long expenseId, final Long groupId) {
         ExpenseEntity expense = expenseRepository.findById(expenseId);
         if (!expense.getGroup().getId().equals(groupId)) {
-            throw new IllegalArgumentException("Expense does not belong to the specified group");
+            throw new ExpenseException("Expense does not belong to the specified group");
         }
         expensesService.deleteExpense(expenseMapper.entityToDomain(expense));
     }
@@ -66,14 +67,14 @@ public class ExpenseServiceApplication {
         return Optional.ofNullable(expenseRepository.findById(expenseId))
                 .filter(expenseEntity -> expenseEntity.getGroup().getId().equals(groupId))
                 .map(expenseMapper::entityToDto)
-                .orElseThrow(() -> new IllegalArgumentException("Expense not found with id: " + expenseId));
+                .orElseThrow(() -> new ResourceNotFoundException("Expense not found with id: " + expenseId));
     }
 
     @Transactional(readOnly = true)
     public List<ExpenseDto> obtainExpensesOfGroupId(final Long groupId) {
         return Optional.ofNullable(expenseRepository.findAllByGroupId(groupId))
                 .map(expenseMapper::entitiesToDtos)
-                .orElseThrow(() -> new IllegalArgumentException("No expenses found for group id: " + groupId));
+                .orElseThrow(() -> new ResourceNotFoundException("No expenses found for group id: " + groupId));
     }
 
 
