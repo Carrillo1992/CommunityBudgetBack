@@ -158,12 +158,12 @@ paths:
         '404':
           description: Gasto no encontrado
 
-  /groups/{groupId}/settlement:
+  /groups/{groupId}/balances:
     get:
       tags:
         - Expenses
-      summary: Obtiene el estado de liquidación de los gastos del grupo
-      operationId: getSettlementStatus
+      summary: Obtiene el resumen de saldos por cada miembro del grupo
+      operationId: getBalances
       parameters:
         - name: groupId
           in: path
@@ -173,22 +173,22 @@ paths:
             format: int64
       responses:
         '200':
-          description: Estado de liquidación obtenido exitosamente
+          description: Resumen de saldos obtenido exitosamente
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SettleUpRequest'
+                  $ref: '#/components/schemas/UserBalanceDto'
         '404':
           description: Grupo no encontrado
 
-  /groups/{groupId}/balance:
+  /groups/{groupId}/settlements:
     get:
       tags:
         - Expenses
-      summary: Obtiene un resumen de gastos por miembro del grupo
-      operationId: getExpenseSummary
+      summary: Obtiene la lista optimizada de deudas (quién debe pagar a quién)
+      operationId: getOptimizedDebts
       parameters:
         - name: groupId
           in: path
@@ -198,15 +198,40 @@ paths:
             format: int64
       responses:
         '200':
-          description: Resumen de gastos obtenido exitosamente
+          description: Algoritmo de deudas calculado exitosamente
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SettleUpRequest'
+                  $ref: '#/components/schemas/DebtDto'
         '404':
           description: Grupo no encontrado
+    post:
+      tags:
+        - Expenses
+      summary: Registra un pago para liquidar una deuda entre dos usuarios
+      operationId: createSettlement
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettleUpRequest'
+      responses:
+        '200':
+          description: Pago registrado exitosamente
+        '400':
+          description: Datos inválidos
+        '404':
+          description: Grupo o usuarios no encontrados
 
 components:
   schemas:
@@ -302,14 +327,37 @@ components:
           type: string
           nullable: true
 
-      ExpenseSplitDto:
-        type: object
-        properties:
-          user:
-            $ref: '#/components/schemas/UserDto'
-          amount:
-            type: number
-            format: double
+    UserBalanceDto:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserDto'
+        totalPaid:
+          type: number
+          format: double
+          description: Total de dinero que el usuario ha puesto
+        totalOwed:
+          type: number
+          format: double
+          description: Total de dinero que el usuario debe por su participación
+        netBalance:
+          type: number
+          format: double
+          description: Saldo neto (totalPaid - totalOwed). Si es positivo le deben dinero, si es negativo debe pagar.
+
+    DebtDto:
+      type: object
+      properties:
+        fromUser:
+          $ref: '#/components/schemas/UserDto'
+          description: El usuario que tiene que hacer el pago
+        toUser:
+          $ref: '#/components/schemas/UserDto'
+          description: El usuario que recibe el pago
+        amount:
+          type: number
+          format: double
+          description: La cantidad exacta a transferir
 
     SettleUpRequest:
       type: object
@@ -321,12 +369,12 @@ components:
         payerId:
           type: integer
           format: int64
-          description: ID del que envía el dinero
+          description: ID del que envía el dinero (El que paga la deuda)
         receiverId:
           type: integer
           format: int64
-          description: ID del que recibe el dinero
+          description: ID del que recibe el dinero (Al que le debían)
         amount:
           type: number
           format: double
-          description: Monto del dinero que se va a transferir
+          description: Monto exacto que se transfiere
