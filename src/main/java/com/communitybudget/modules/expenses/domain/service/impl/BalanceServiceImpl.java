@@ -1,6 +1,6 @@
 package com.communitybudget.modules.expenses.domain.service.impl;
 
-import com.communitybudget.common.exceptions.exception.GroupRequestException;
+import com.communitybudget.common.exceptions.exception.ResourceNotFoundException;
 import com.communitybudget.modules.expenses.domain.valueobjects.Debt;
 import com.communitybudget.modules.expenses.domain.model.Expense;
 import com.communitybudget.modules.expenses.domain.valueobjects.UserBalance;
@@ -59,7 +59,7 @@ public class BalanceServiceImpl implements BalanceService {
         validateGroup(groupId);
         List<UserBalance> balances = calculateBalancesForGroup(groupId);
 
-        List<UserBalance> debtors = getSoredDebtors(balances);
+        List<UserBalance> debtors = getSortedDebtors(balances);
 
         List<UserBalance> creditors = getSortedCreditors(balances);
 
@@ -118,7 +118,7 @@ public class BalanceServiceImpl implements BalanceService {
                 .toList();
     }
 
-    private static List<UserBalance> getSoredDebtors(List<UserBalance> balances) {
+    private static List<UserBalance> getSortedDebtors(List<UserBalance> balances) {
         return balances.stream()
                 .filter(UserBalance::isDebtor)
                 .sorted(Comparator.comparing((UserBalance b) -> b.getBalance().abs()).reversed())
@@ -127,7 +127,7 @@ public class BalanceServiceImpl implements BalanceService {
 
     private void validateGroup(final Long groupId) {
         if (!groupRepository.existsById(groupId)) {
-            throw new GroupRequestException("Group with id " + groupId + " does not exist.");
+            throw new ResourceNotFoundException("Group with id " + groupId + " does not exist.");
         }
     }
 }

@@ -3,7 +3,6 @@ package com.communitybudget.modules.expenses.application.mapper;
 import com.communitybudget.modules.expenses.application.dto.DebtDto;
 import com.communitybudget.modules.expenses.application.dto.SettleUpRequest;
 import com.communitybudget.modules.expenses.application.dto.UserBalanceDto;
-import com.communitybudget.modules.expenses.application.dto.UserDto;
 import com.communitybudget.modules.expenses.domain.model.Expense;
 import com.communitybudget.modules.expenses.domain.model.ExpenseShare;
 import com.communitybudget.modules.expenses.domain.valueobjects.Debt;
@@ -44,6 +43,6 @@ public interface BalanceMapper {
                 .build());
     }
     default String descriptionFromSettleUpRequest(final SettleUpRequest settleUpRequest){
-        return String.format("Budget up: %s pays %s", settleUpRequest.getPayerId(), settleUpRequest.getReceiverId());
+        return String.format("Settle up: %s pays %s", settleUpRequest.getPayerId(), settleUpRequest.getReceiverId());
     }
 }

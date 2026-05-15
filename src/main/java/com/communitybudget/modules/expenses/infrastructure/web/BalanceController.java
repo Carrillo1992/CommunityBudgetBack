@@ -19,7 +19,7 @@ public class BalanceController {
         this.balanceServiceApplication = balanceServiceApplication;
     }
 
-    @GetMapping("/{groupId}/balance")
+    @GetMapping("/{groupId}/balances")
     public ResponseEntity<List<UserBalanceDto>> getGroupBalance(@PathVariable final Long groupId) {
         List<UserBalanceDto> balances = balanceServiceApplication.obtainBalancesOfGroupId(groupId);
         return ResponseEntity.status(200).body(balances);
@@ -31,10 +31,10 @@ public class BalanceController {
         return ResponseEntity.status(200).body(debts);
     }
 
-    @PostMapping("{groupId}/settlements")
+    @PostMapping("/{groupId}/settlements")
     public ResponseEntity<Void> settleDebt(@PathVariable final Long groupId, @RequestBody final SettleUpRequest settleUpRequest) {
         balanceServiceApplication.createSettle(settleUpRequest, groupId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
 }

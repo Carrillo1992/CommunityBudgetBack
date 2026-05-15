@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class Expense {
     public void validateMath() {
         BigDecimal totalShares = shares.stream()
                 .map(ExpenseShare::getAmount)
-                .map(amount -> amount.setScale(2, BigDecimal.ROUND_HALF_UP))
+                .map(amount -> amount.setScale(2, RoundingMode.HALF_UP))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         if (totalShares.compareTo(this.amount) != 0) {
