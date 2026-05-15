@@ -2,7 +2,6 @@ package com.communitybudget.modules.expenses.domain.model;
 
 import com.communitybudget.common.exceptions.exception.BadRequestException;
 import com.communitybudget.modules.expenses.domain.valueobjects.Category;
-import com.communitybudget.modules.expenses.domain.valueobjects.ExpenseShare;
 import lombok.Builder;
 import lombok.Data;
 
@@ -35,9 +34,11 @@ public class Expense {
         shares.add(ExpenseShare.builder().amount(owedAmount).userId(userId).build());
     }
 
+    // modificar cuando la division de gastos sea periodica
     public void validateMath() {
         BigDecimal totalShares = shares.stream()
                 .map(ExpenseShare::getAmount)
+                .map(amount -> amount.setScale(2, BigDecimal.ROUND_HALF_UP))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         if (totalShares.compareTo(this.amount) != 0) {

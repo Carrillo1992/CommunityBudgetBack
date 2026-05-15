@@ -1,4 +1,4 @@
-package com.communitybudget.modules.expenses.domain.valueobjects;
+package com.communitybudget.modules.expenses.domain.model;
 
 import lombok.Builder;
 import lombok.Data;
