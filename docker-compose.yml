@@ -7,12 +7,18 @@ services:
     env_file:
       - .env
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
       - ./docker/docker-init:/docker-entrypoint-initdb.d
     networks:
       - community_budget_net
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   app:
     build:
@@ -24,13 +30,13 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - community_budget_net
 
 volumes:
   db_data:
-
 
 networks:
   community_budget_net:
