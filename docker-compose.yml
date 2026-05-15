@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: community_budget_db
+    env_file:
+      - .env
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/docker-init:/docker-entrypoint-initdb.d
+    networks:
+      - community_budget_net
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: community_budget_app
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - community_budget_net
+
+volumes:
+  db_data:
+
+
+networks:
+  community_budget_net:
