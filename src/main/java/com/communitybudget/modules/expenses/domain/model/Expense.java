@@ -35,14 +35,21 @@ public class Expense {
         shares.add(ExpenseShare.builder().amount(owedAmount).userId(userId).build());
     }
 
-    // modificar cuando la division de gastos sea periodica
     public void validateMath() {
+        if (this.amount == null || shares.isEmpty()) {
+            return;
+        }
         BigDecimal totalShares = shares.stream()
                 .map(ExpenseShare::getAmount)
                 .map(amount -> amount.setScale(2, RoundingMode.HALF_UP))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        if (totalShares.compareTo(this.amount) != 0) {
+        BigDecimal expenseAmount = this.amount.setScale(2, RoundingMode.HALF_UP);
+        BigDecimal difference = totalShares.subtract(expenseAmount).abs();
+
+        BigDecimal allowedTolerance = new BigDecimal("0.01").multiply(new BigDecimal(shares.size()));
+
+        if (difference.compareTo(allowedTolerance) > 0) {
             throw new BadRequestException("Total shares must equal the total expense amount");
         }
     }

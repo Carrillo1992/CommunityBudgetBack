@@ -42,17 +42,6 @@ public interface ExpenseMapper {
     @Mapping(target = "amount", source = "share.amount")
     ExpenseSplitDto shareToSplitDto(final ExpenseShare share, @Context final List<User> users);
 
-    default UserDto mapUserIdToUserDto(final Long userId, @Context final List<User> users) {
-        if (userId == null || users == null) {
-            return null;
-        }
-        return users.stream()
-                .filter(u -> u.getId().equals(userId))
-                .findFirst()
-                .map(this::userToUserDto)
-                .orElse(null);
-    }
-
     UserDto userToUserDto(User user);
 
     @Mapping(target = "groupId", source = "groupId")
@@ -108,5 +97,16 @@ public interface ExpenseMapper {
             return null;
         }
         return ExpenseShare.builder().userId(splitDto.getUser().getId()).amount(BigDecimal.valueOf(splitDto.getAmount())).build();
+    }
+
+    default UserDto mapUserIdToUserDto(final Long userId, @Context final List<User> users) {
+        if (userId == null || users == null) {
+            return null;
+        }
+        return users.stream()
+                .filter(u -> u.getId().equals(userId))
+                .findFirst()
+                .map(this::userToUserDto)
+                .orElse(null);
     }
 }
