@@ -761,9 +761,32 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/groups/{{groupId}}/balance",
+							"raw": "{{baseUrl}}/groups/{{groupId}}/balances",
 							"host": ["{{baseUrl}}"],
-							"path": ["groups", "{{groupId}}", "balance"]
+							"path": ["groups", "{{groupId}}", "balances"]
+						},
+						"description": "Obtiene un resumen de gastos por miembro del grupo"
+					},
+					"response": []
+				},
+				{
+					"name": "Settle Up",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/groups/{{groupId}}/balances",
+							"host": ["{{baseUrl}}"],
+							"path": ["groups", "{{groupId}}", "balances"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fromUserId\": 1,\n    \"toUserId\": 2,\n    \"amount\": 25.0\n}"
 						},
 						"description": "Obtiene un resumen de gastos por miembro del grupo"
 					},

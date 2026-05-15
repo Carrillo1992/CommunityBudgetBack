@@ -66,7 +66,7 @@ public class BalanceServiceImpl implements BalanceService {
         return resolveDebts(debtors, creditors);
     }
 
-    private static List<Debt> resolveDebts(List<UserBalance> debtors, List<UserBalance> creditors) {
+    private static List<Debt> resolveDebts(final List<UserBalance> debtors, final List<UserBalance> creditors) {
         List<Debt> debts = new ArrayList<>();
 
         if (debtors.isEmpty() || creditors.isEmpty()) {
@@ -103,7 +103,7 @@ public class BalanceServiceImpl implements BalanceService {
         return debts;
     }
 
-    private static Debt createDebt(Long fromUserId, Long toUserId, BigDecimal amount) {
+    private static Debt createDebt(final Long fromUserId, final  Long toUserId,final  BigDecimal amount) {
         return Debt.builder()
                 .fromUserId(fromUserId)
                 .toUserId(toUserId)
@@ -111,14 +111,14 @@ public class BalanceServiceImpl implements BalanceService {
                 .build();
     }
 
-    private static  List<UserBalance> getSortedCreditors(List<UserBalance> balances) {
+    private static  List<UserBalance> getSortedCreditors(final List<UserBalance> balances) {
         return balances.stream()
                 .filter(UserBalance::isCreditor)
                 .sorted(Comparator.comparing(UserBalance::getBalance).reversed())
                 .toList();
     }
 
-    private static List<UserBalance> getSortedDebtors(List<UserBalance> balances) {
+    private static List<UserBalance> getSortedDebtors(final List<UserBalance> balances) {
         return balances.stream()
                 .filter(UserBalance::isDebtor)
                 .sorted(Comparator.comparing((UserBalance b) -> b.getBalance().abs()).reversed())
