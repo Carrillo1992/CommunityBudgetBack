@@ -22,7 +22,6 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(GroupRequestException.class)
     public ResponseEntity<ErrorResponse> handleGroupRequestException(GroupRequestException ex) {
-        // Map domain exceptions like "Only admins can update the group" to 403 Forbidden
         if (ex.getMessage().contains("Only admins") || ex.getMessage().contains("Only the group owner")) {
             ErrorResponse error = new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);

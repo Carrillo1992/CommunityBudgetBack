@@ -9,7 +9,7 @@ import com.communitybudget.modules.expenses.application.dto.UpdateExpenseRequest
 import com.communitybudget.modules.expenses.application.mapper.ExpenseMapper;
 import com.communitybudget.modules.expenses.domain.model.Expense;
 import com.communitybudget.modules.expenses.domain.service.ExpensesService;
-import com.communitybudget.modules.expenses.domain.valueobjects.ExpenseShare;
+import com.communitybudget.modules.expenses.domain.model.ExpenseShare;
 import com.communitybudget.modules.expenses.infrastructure.persistence.ExpenseReadRepository;
 import com.communitybudget.modules.expenses.infrastructure.persistence.entity.ExpenseEntity;
 import com.communitybudget.modules.user.domain.model.User;

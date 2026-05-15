@@ -1,6 +1,8 @@
 package com.communitybudget.modules.expenses;
 
+import com.communitybudget.modules.expenses.domain.service.BalanceService;
 import com.communitybudget.modules.expenses.domain.service.ExpensesService;
+import com.communitybudget.modules.expenses.domain.service.impl.BalanceServiceImpl;
 import com.communitybudget.modules.expenses.domain.service.impl.ExpensesServiceImpl;
 import com.communitybudget.modules.expenses.infrastructure.persistence.ExpensesRepositoryImpl;
 import com.communitybudget.modules.group.infrastructure.persistence.GroupRepositoryImpl;
@@ -13,5 +15,10 @@ public class ExpenseBeanConfig {
     @Bean
     public ExpensesService expenseService(final ExpensesRepositoryImpl expenseRepository, final GroupRepositoryImpl groupRepository) {
         return new ExpensesServiceImpl(expenseRepository, groupRepository);
+    }
+
+    @Bean
+    public BalanceService balanceService(final ExpensesRepositoryImpl expenseRepository, final GroupRepositoryImpl groupRepository) {
+        return new BalanceServiceImpl(expenseRepository, groupRepository);
     }
 }
