@@ -2,13 +2,15 @@ package com.communitybudget.modules.user.application.service;
 
 import com.communitybudget.modules.user.domain.service.EmailService;
 import com.communitybudget.modules.user.domain.service.PasswordResetService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PasswordResetApplicationService {
 
-    private static final String URL_RESET_PASSWORD = "http://localhost:5173/reset-password";
+    @Value("${URL_RESET_PASSWORD}")
+    private String urlResetPassword;
 
     private final PasswordResetService passwordResetService;
     private final EmailService emailService;
@@ -22,7 +24,7 @@ public class PasswordResetApplicationService {
     public void processPasswordReset(final String email) {
         String token = passwordResetService.createToken(email);
         if (token != null) {
-            final String resetLink = URL_RESET_PASSWORD + "/" + token;
+            final String resetLink = urlResetPassword + "/" + token;
             emailService.sendPasswordResetEmail(email, resetLink);
         }
     }
