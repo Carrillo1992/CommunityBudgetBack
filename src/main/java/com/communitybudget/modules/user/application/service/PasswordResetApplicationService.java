@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PasswordResetApplicationService {
 
-    @Value("${URL_RESET_PASSWORD}")
+    @Value("${mail.reset-password}")
     private String urlResetPassword;
 
     private final PasswordResetService passwordResetService;
